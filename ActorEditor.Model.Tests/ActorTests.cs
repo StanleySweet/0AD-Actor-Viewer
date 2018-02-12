@@ -12,7 +12,7 @@ namespace ActorEditor.Model.Tests
         [TestInitialize]
         public void TestInitialize()
         {
-            using (var athenianDockFile = new StreamReader(@"C:\Dev\ActorEditor\ActorEditor.Model.Tests\athenian_dock.xml"))
+            using (var athenianDockFile = new StreamReader(@"G:\ActorEditor\ActorEditor.Model.Tests\athenian_dock.xml"))
             {
                 var actorFile = XDocument.Parse(athenianDockFile.ReadToEnd());
                 _athenianDockActor = new Actor(actorFile);
@@ -24,9 +24,9 @@ namespace ActorEditor.Model.Tests
         public void XMLParse()
         {
             Assert.AreEqual(_athenianDockActor.Version, (uint) 1);
-            Assert.AreEqual(_athenianDockActor.Floats, true);
-            Assert.AreEqual(_athenianDockActor.CastsShadows, true);
-            Assert.AreEqual(_athenianDockActor.Material.FileName, "player_trans_ao_parallax_spec.xml");
+            Assert.AreEqual(true, _athenianDockActor.Floats);
+            Assert.AreEqual(true, _athenianDockActor.CastsShadows);
+            Assert.AreEqual("player_trans_ao_parallax_spec.xml", _athenianDockActor.Material);
         }
     }
 }

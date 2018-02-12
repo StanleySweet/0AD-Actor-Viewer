@@ -3,10 +3,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:ActorEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="0 A.D. Actor Editor" Height="350" Width="525">
+    
+    <Grid Background="LightGray">
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_New">
+                        <MenuItem Header="_Variant" Click="MenuItem_Click_4"/>
+                        <MenuItem Header="_Actor" Click="MenuItem_Click_5"/>
+                        <MenuItem Header="_Particle" Click="MenuItem_Click_6"/>
+                    </MenuItem>
+                    <MenuItem Header="_Open" Click="MenuItem_Click"/>
+                    <MenuItem Header="_Save" Click="MenuItem_Click_1"/>
+                    <MenuItem Header="_Save As" Click="MenuItem_Click_2"/>
+                    <MenuItem Header="_Exit" Click="MenuItem_Click_3"/>
+                </MenuItem>
+            </Menu>
+            <WrapPanel Margin="10 10 0 0">
+                <CheckBox Visibility="Hidden" IsEnabled="False" Name="castsShadows" Unchecked="castsShadows_Checked" Checked="castsShadows_Checked" Content="Casts Shadows"/>
+                <CheckBox Visibility="Hidden" IsEnabled="False" Name="floats"  Unchecked="floats_Checked" Checked="floats_Checked" Content="Floats on water"/>
+            </WrapPanel>
+
+        </DockPanel>
     </Grid>
 </Window>
