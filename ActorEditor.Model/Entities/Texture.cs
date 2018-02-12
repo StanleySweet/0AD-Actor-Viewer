@@ -23,16 +23,16 @@ namespace ActorEditor.Model
             this._textureType = textureType;
         }
 
-        public string RelativePath
-        {
-            get { return this._relativePath; }
-            set { this._relativePath = value; }
-        }
+        public string GetRelativePath()
+        { return this._relativePath; }
 
-        public TextureType TextureType
-        {
-            get { return this._textureType; }
-            set { this._textureType = value; }
-        }
+        public void SetRelativePath(string value)
+        { this._relativePath = value; }
+
+        public TextureType GetTextureType()
+        { return this._textureType; }
+
+        public void SetTextureType(TextureType value)
+        { this._textureType = value; }
     }
 }

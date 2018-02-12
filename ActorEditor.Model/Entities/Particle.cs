@@ -9,9 +9,10 @@
             this._relativePath = relativePath;
         }
 
-        public string RelativePath {
-            get { return this._relativePath; }
-            set { this._relativePath = value; }
-        }
+        public string GetRelativePath()
+        { return this._relativePath; }
+
+        public void SetRelativePath(string value)
+        { this._relativePath = value; }
     }
 }
