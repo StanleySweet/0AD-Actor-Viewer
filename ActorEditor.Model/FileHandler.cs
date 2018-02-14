@@ -25,78 +25,27 @@ namespace ActorEditor.Model
 
         public static bool SaveFile(Actor actor)
         {
-            XDocument document = new XDocument();
-            XElement root = new XElement("actor");
-            root.Add(new XAttribute("version", actor.Version));
-
-            if (actor.CastsShadows)
-                root.Add(new XElement("castshadows"));
-            if (actor.Floats)
-                root.Add(new XElement("float"));
-
-
-            foreach (var group in actor.Groups)
+            using (var file = new StreamWriter(@"G:\test.xml"))
             {
-                var curGroup = new XElement("group");
-                foreach (var variant in group)
+                XmlWriterSettings settings = new XmlWriterSettings
                 {
-                    var curVariant = new XElement("variant");
-                    if (!string.IsNullOrEmpty(variant.Name))
-                        curVariant.Add(new XAttribute("name", variant.Name));
-                    if (!string.IsNullOrEmpty(variant.Frequency.ToString()))
-                        curVariant.Add(new XAttribute("frequency", variant.Frequency));
-                    if (!string.IsNullOrEmpty(variant.Mesh))
-                        curVariant.Add(new XElement("mesh", variant.Mesh));
-                    if (!string.IsNullOrEmpty(variant.Color.ToString()))
-                        curVariant.Add(new XElement("color", variant.Color.ToString()));
-
-                    if (variant.Props != null)
-                    {
-                        var props = new XElement("props");
-                        foreach(var prop in variant.Props)
-                        {
-                            var Xprop = new XElement("prop");
-                            Xprop.Add(new XAttribute("attachpoint", prop.AttachPoint));
-                            Xprop.Add(new XAttribute("actor", prop.GetRelativePath()));
-                            props.Add(Xprop);
-                        }
-
-
-                        curVariant.Add(props);
-                    }
-
-
-
-
-                    curGroup.Add(curVariant);
-                }
-                root.Add(curGroup);
-            }
-            document.Add(root);
-
-            XmlWriterSettings settings = new XmlWriterSettings
-            {
-                Encoding = Encoding.UTF8,
-                ConformanceLevel = ConformanceLevel.Document,
-                OmitXmlDeclaration = false,
-                CloseOutput = true,
-                Indent = true,
-                IndentChars = "  ",
-                NewLineHandling = NewLineHandling.Replace
-            };
-
-
-            using (var file = new StreamWriter(@"D:\test.xml"))
-            {
+                    Encoding = Encoding.UTF8,
+                    ConformanceLevel = ConformanceLevel.Document,
+                    OmitXmlDeclaration = false,
+                    CloseOutput = true,
+                    Indent = true,
+                    IndentChars = "  ",
+                    NewLineHandling = NewLineHandling.Replace
+                };
                 using (XmlWriter writer = XmlWriter.Create(file, settings))
                 {
+                    XDocument document = new XDocument();
+                    document.Add(actor.SerializeElements());
                     document.WriteTo(writer);
                     writer.Close();
                 }
             }
-
             return true;
         }
-
     }
 }

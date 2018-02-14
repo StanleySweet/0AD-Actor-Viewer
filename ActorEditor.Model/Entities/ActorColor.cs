@@ -8,14 +8,15 @@ namespace ActorEditor.Model
 {
     class ActorColor
     {
-        byte _red, _blue, _green;
-        bool _hasColor;
+        private byte _red, _blue, _green;
+        private bool _hasColor;
 
         public ActorColor(Color color)
         {
             _red = color.R;
             _blue = color.B;
             _green = color.R;
+            _hasColor = true;
         }
 
         public ActorColor(XElement color)
@@ -36,6 +37,7 @@ namespace ActorEditor.Model
             _red = color.R;
             _blue = color.B;
             _green = color.R;
+            _hasColor = true;
         }
 
         public Color GetColor(Color color)

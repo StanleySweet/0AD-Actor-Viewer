@@ -5,6 +5,7 @@ namespace ActorEditor.Model
     using System.Collections.Generic;
     using System.Xml.Linq;
     using System.Linq;
+    using ActorEditor.Model.Entities;
 
     public class Actor
     {
@@ -12,29 +13,33 @@ namespace ActorEditor.Model
         private bool _castsShadows;
         private bool _floats;
 
-        private List<HashSet<Variant>> _groups;
+        private Groups _groups;
         private string _material;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="actorFile"></param>
         public Actor(XDocument actorFile)
-        {
-            Groups = new List<HashSet<Variant>>();
+        {        
+            _groups = new Groups();
 
             XElement actor = actorFile.Elements().FirstOrDefault(a => a.Name == "actor");
             this.Version = uint.Parse(actor.Attributes().FirstOrDefault(a => a.Name.LocalName == "version").Value);
-            this._castsShadows = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadow") != null;
+            this._castsShadows = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadows") != null;
             this._floats = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;
             this._material = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "material").Value;
 
             var xElementGroups = actor.Elements().Where(a => a.Name.LocalName == "group");
             foreach (var xElementGroup in xElementGroups)
             {
-                var variants = new HashSet<Variant>();
+                var variants = new Group();
                 var xElementVariants = xElementGroup.Elements().Where(a => a.Name.LocalName == "variant");
                 foreach (var xElementVariant in xElementVariants)
                 {
                     variants.Add(new Variant(xElementVariant));
                 }
-                Groups.Add(variants);
+                _groups.Add(variants);
             }
         }
 
@@ -42,6 +47,24 @@ namespace ActorEditor.Model
         public bool Floats { get => _floats; set => _floats = value; }
         public bool CastsShadows { get => _castsShadows; set => _castsShadows = value; }
         public string Material { get => _material; set => _material = value; }
-        public List<HashSet<Variant>> Groups { get => _groups; set => _groups = value; }
+        public Groups Groups { get => _groups; set => _groups = value; }
+
+        public XElement SerializeElements()
+        {
+            XElement root = new XElement("actor");
+            root.Add(new XAttribute("version", this.Version));
+
+            if (this.CastsShadows)
+                root.Add(new XElement("castshadows"));
+            if (this.Floats)
+                root.Add(new XElement("float"));
+
+            foreach (var group in this.Groups)
+                root.Add(group.SerializeElements());
+
+            root.Add(new XElement("material", this.Material));
+
+            return root;
+        }
     }
 }

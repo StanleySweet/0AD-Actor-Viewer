@@ -49,19 +49,21 @@ namespace ActorEditor
             // Process input if the user clicked OK.
             if (userClickedOK == true)
             {
-               _actor = ActorEditor.Model.FileHandler.OpenFile(openFileDialog1.FileName);
+                _actor = FileHandler.OpenFile(openFileDialog1.FileName);
+                floats.IsEnabled = true;
+                castsShadows.IsEnabled = true;
                 castsShadows.IsChecked = _actor.CastsShadows;
                 floats.IsChecked = _actor.Floats;
-                floats.IsEnabled = true;
                 castsShadows.Visibility = Visibility.Visible;
                 floats.Visibility = Visibility.Visible;
-                castsShadows.IsEnabled = true;
+                listview.Visibility = Visibility.Visible;
+                this.DataContext = _actor.Groups;
             }
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-            if(_actor != null)
+            if (_actor != null)
                 FileHandler.SaveFile(_actor);
         }
 
@@ -79,12 +81,12 @@ namespace ActorEditor
 
         private void castsShadows_Checked(object sender, RoutedEventArgs e)
         {
-            _actor.CastsShadows = (bool) castsShadows.IsChecked;
+            _actor.CastsShadows = (bool)castsShadows.IsChecked;
         }
 
         private void floats_Checked(object sender, RoutedEventArgs e)
         {
-            _actor.Floats = (bool) floats.IsChecked;
+            _actor.Floats = (bool)floats.IsChecked;
         }
 
         private void MenuItem_Click_4(object sender, RoutedEventArgs e)

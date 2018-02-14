@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 
 namespace ActorEditor.Model
 {
@@ -14,5 +15,10 @@ namespace ActorEditor.Model
         private uint _animationSpeed;
         private uint _frequency;
         private string _relativePath;
+
+        public Animation(XElement animation)
+        {
+
+        }
     }
 }

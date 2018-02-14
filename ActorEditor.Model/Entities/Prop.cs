@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace ActorEditor.Model
 {
-    class Prop
+    public class Prop
     {
         private string attachPoint;
         private string _relativePath;
@@ -16,20 +16,11 @@ namespace ActorEditor.Model
 
         public Prop(XElement prop)
         {
-            try
-            {
-                this._relativePath = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "actor")?.Value;
-                this.AttachPoint = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "attachpoint")?.Value;
-                //this._maxHeight = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "minheight")?.Value;
-                //this._minHeight = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "maxheight")?.Value;
-                //this.IsSelectable = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "selectable")?.Value;
-            }
-            catch (Exception ex)
-            {
-
-                Console.WriteLine("Bug" + ex.Message);
-            }
-
+            this._relativePath = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "actor")?.Value;
+            this.AttachPoint = prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "attachpoint")?.Value;
+            decimal.TryParse(prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "minheight")?.Value, out this._minHeight);
+            decimal.TryParse(prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "minheight")?.Value, out this._maxHeight);
+            bool.TryParse(prop.Attributes().FirstOrDefault(a => a.Name.LocalName == "selectable")?.Value, out this.IsSelectable);
         }
 
         public bool IsSelectable1 { get => IsSelectable; set => IsSelectable = value; }

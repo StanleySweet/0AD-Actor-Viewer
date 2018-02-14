@@ -6,8 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:ActorEditor"
         mc:Ignorable="d"
-        Title="0 A.D. Actor Editor" Height="350" Width="525">
-    
+        Title="0 A.D. Actor Editor" MinHeight="350" MaxHeight="350" MaxWidth="700" MinWidth="700">
     <Grid Background="LightGray">
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -27,7 +26,63 @@
                 <CheckBox Visibility="Hidden" IsEnabled="False" Name="castsShadows" Unchecked="castsShadows_Checked" Checked="castsShadows_Checked" Content="Casts Shadows"/>
                 <CheckBox Visibility="Hidden" IsEnabled="False" Name="floats"  Unchecked="floats_Checked" Checked="floats_Checked" Content="Floats on water"/>
             </WrapPanel>
-
         </DockPanel>
+        
+        <ListView Name="listview" Visibility="Hidden" HorizontalAlignment="Center" Width="660" Height="240" Margin="20,60,20,20" 
+              VerticalAlignment="Center" ScrollViewer.CanContentScroll="True"  ItemsSource="{Binding}" AlternationCount="2">
+            <ListView.View>
+                <GridView x:Name="GridView1">
+                    <GridViewColumn Header="Name">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Name}"  TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn  Header="Frequency">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Frequency}" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn  Header="Parent File">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=ParentVariantRelativePath}" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Model">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Path=Mesh}" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Animations">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Animations}" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Props">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                                <TextBlock Text="{Binding Path=Props}" TextWrapping="Wrap"/>
+                            </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Textures" Width="300">
+                    <GridViewColumn.CellTemplate>
+                        <DataTemplate>
+                                <TextBlock Text="{Binding Path=Textures}" TextWrapping="WrapWithOverflow"/>
+                            </DataTemplate>
+                    </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
