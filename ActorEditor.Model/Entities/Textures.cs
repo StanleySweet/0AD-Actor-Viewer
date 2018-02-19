@@ -7,6 +7,18 @@ namespace ActorEditor.Model.Entities
 {
     public class Textures : HashSet<Texture>
     {
+        public Textures()
+        {
+
+        }
+
+        public Textures(IEnumerable<XElement> textures) : base()
+        {
+            if (textures != null)
+                foreach (var texture in textures)
+                    this.Add(new Texture(texture));
+        }
+
         public override string ToString()
         {
             string serializedString = string.Empty;
