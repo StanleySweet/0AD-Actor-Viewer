@@ -6,83 +6,170 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:ActorEditor"
         mc:Ignorable="d"
-        Title="0 A.D. Actor Editor" MinHeight="350" MaxHeight="350" MaxWidth="700" MinWidth="700">
+        Title="0 A.D. Actor Editor" MinHeight="350" MaxHeight="350" Width="700" Height="350" MaxWidth="700" MinWidth="700">
     <Grid Background="LightGray">
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
                     <MenuItem Header="_New">
-                        <MenuItem Header="_Variant" Click="MenuItem_Click_4"/>
-                        <MenuItem Header="_Actor" Click="MenuItem_Click_5"/>
-                        <MenuItem Header="_Particle" Click="MenuItem_Click_6"/>
+                        <MenuItem Header="_Actor" Click="CreateActor"/>
+                        <MenuItem IsEnabled="False" Header="_Particle" Click="MenuItem_Click_6"/>
+                        <MenuItem Header="_Variant" Click="CreateVariant"/>
                     </MenuItem>
-                    <MenuItem Header="_Open" Click="MenuItem_Click"/>
-                    <MenuItem Header="_Save" Click="MenuItem_Click_1"/>
-                    <MenuItem Header="_Save As" Click="MenuItem_Click_2"/>
-                    <MenuItem Header="_Exit" Click="MenuItem_Click_3"/>
+                    <MenuItem Header="_Open">
+                        <MenuItem Header="_Open Actor" Click="OpenActor"/>
+                        <MenuItem IsEnabled="False" Header="_Open Particle" Click="MenuItem_Click_6"/>
+                        <MenuItem IsEnabled="False" Header="_Open Variant" Click="CreateVariant"/>
+                    </MenuItem>
+                    <MenuItem Header="_Save" Click="Save"/>
+                    <MenuItem IsEnabled="False" Header="_Save As" Click="MenuItem_Click_2"/>
+                    <MenuItem Header="_Exit" Click="Exit"/>
                 </MenuItem>
             </Menu>
-            <WrapPanel Margin="10 10 0 0">
-                <CheckBox Visibility="Hidden" IsEnabled="False" Name="castsShadows" Unchecked="castsShadows_Checked" Checked="castsShadows_Checked" Content="Casts Shadows"/>
-                <CheckBox Visibility="Hidden" IsEnabled="False" Name="floats"  Unchecked="floats_Checked" Checked="floats_Checked" Content="Floats on water"/>
-            </WrapPanel>
         </DockPanel>
+        <WrapPanel Visibility="Hidden" Name="actorOptions" Margin="25 25 0 0">
+            <CheckBox  IsEnabled="False" Name="castsShadows" Unchecked="castsShadows_Checked" Checked="castsShadows_Checked" Content="Casts Shadows" Margin="25 0 0 0"/>
+            <CheckBox  IsEnabled="False" Name="floats"  Unchecked="floats_Checked" Checked="floats_Checked" Content="Floats on water" Margin="25 0 0 0"/>
+            <ComboBox Name="Materials" Width="150" Margin="25 0 0 0" SelectionChanged="Materials_SelectionChanged"/>
+        </WrapPanel>
+        <StackPanel Margin="0 50 0 0" Name="groupview" Visibility="Hidden">
+            <ListView Name="grouplistview" Width="590" Height="200"
+              VerticalAlignment="Center" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True"  ItemsSource="{Binding}" AlternationCount="2"  >
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Height" Value="20" />
+                        <Style.Triggers>
+                            <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                <Setter Property="Background" Value="White"></Setter>
+                            </Trigger>
+                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                <Setter Property="Background" Value="LightGray"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="IndianRed"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridView.Columns >
+                            <GridViewColumn Header="Select">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Tag="{Binding ID}" IsChecked="{Binding Path=IsChecked}" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding}" Header="ID" />
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <WrapPanel HorizontalAlignment="Right" >
+                <Button  Height="20" Width="100" Click="Button_Click" Margin="0 25 25 0" Content="Add Group" />
+                <Button  Height="20" Width="100" Click="EditGroup" Margin="0 25 25 0" Content="Edit Group" />
+                <Button  Height="20" Width="100" Click="Button_Click_3" Margin="0 25 25 0" Content="Delete Groups" />
+            </WrapPanel>
+        </StackPanel>
         
-        <ListView Name="listview" Visibility="Hidden" HorizontalAlignment="Center" Width="660" Height="240" Margin="20,60,20,20" 
-              VerticalAlignment="Center" ScrollViewer.CanContentScroll="True"  ItemsSource="{Binding}" AlternationCount="2">
-            <ListView.View>
-                <GridView x:Name="GridView1">
-                    <GridViewColumn Header="Name">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=Name}"  TextWrapping="Wrap"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn  Header="Frequency">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=Frequency}" TextWrapping="Wrap"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn  Header="Parent File">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=ParentVariantRelativePath}" TextWrapping="Wrap"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Model">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Text="{Binding Path=Mesh}" TextWrapping="Wrap"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Animations">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Animations}" TextWrapping="Wrap"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Props">
-                    <GridViewColumn.CellTemplate>
-                        <DataTemplate>
-                                <TextBlock Text="{Binding Path=Props}" TextWrapping="Wrap"/>
-                            </DataTemplate>
-                    </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Textures" Width="300">
-                    <GridViewColumn.CellTemplate>
-                        <DataTemplate>
-                                <TextBlock Text="{Binding Path=Textures}" TextWrapping="WrapWithOverflow"/>
-                            </DataTemplate>
-                    </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <StackPanel Margin="0 50 0 0" Name="variantview" Visibility="Hidden">
+            <ListView Name="variantListview" HorizontalAlignment="Center" Width="660" Height="200" VerticalAlignment="Center" ScrollViewer.CanContentScroll="True"  ItemsSource="{Binding}" AlternationCount="2">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Height" Value="20" />
+                        <Style.Triggers>
+                            <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                <Setter Property="Background" Value="White"></Setter>
+                            </Trigger>
+                            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                <Setter Property="Background" Value="LightGray"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="IndianRed"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                                      
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+
+                    <GridView x:Name="GridView1">
+
+                        <GridViewColumn Width="40" Header="Select">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox  Tag="{Binding ID}" IsChecked="{Binding Path=IsChecked}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Name">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox  Grid.Column="1" Grid.Row="2"  Text="{Binding Path=Name}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn  Header="Frequency">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Frequency}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn  Header="Parent File">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=ParentVariantRelativePath}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Model">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=Mesh}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Animations">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Animations}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Props">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Props}" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Textures">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Textures}" TextWrapping="WrapWithOverflow" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <WrapPanel HorizontalAlignment="Right" >
+                <Button  Height="20" Width="100" Name="AddVariantButton"  Click="Button_Click_1" Margin="0 10 25 0" Content="Add Variant" />
+                <Button  Height="20" Width="100" Click="EditTextures" Margin="0 10 25 0" Content="Edit Textures" />
+                <Button  Height="20" Width="100" Click="EditAnimations" Margin="0 10 25 0" Content="Edit Animations" />
+                <Button  Height="20" Width="100" Click="EditProps" Margin="0 10 25 0" Content="Edit Props" />
+                <Button  Height="20" Width="100" Name="DeleteVariantButton" Click="DeleteVariant" Margin="0 10 25 0" Content="Delete Variant" />
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Right" >
+                <Button  Height="20" Width="100" Click="Button_Click_4" Margin="0 10 25 0" Content="Browse for variant" />
+                <Button  Height="20" Width="100" Click="Button_Click_5" Margin="0 10 25 0" Content="Browse for mesh" />
+                <Button  Height="20" Width="100" Name="GoBackButton"  Click="Button_Click_6" Margin="0 10 25 0" Content="Go Back" />
+            </WrapPanel>
+        </StackPanel>
     </Grid>
 </Window>

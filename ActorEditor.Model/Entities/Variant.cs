@@ -10,6 +10,8 @@ namespace ActorEditor.Model
 {
     public class Variant
     {
+        public bool IsChecked { get; set; }
+
         private string _name;
         private string _parentVariantRelativePath;
         private uint _frequency;
@@ -21,6 +23,15 @@ namespace ActorEditor.Model
         private ActorColor _color;
         private string _mesh;
 
+        public Variant()
+        {
+            _props = new Props();
+            _textures = new Textures();
+            _animations = new Animations();
+            _color = new ActorColor(null);
+        }
+
+
         public Variant(XDocument variantFile)
         {
 
@@ -28,8 +39,6 @@ namespace ActorEditor.Model
 
         public Variant(XElement variantBlock)
         {
-
-
             this.Name = variantBlock.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
             this.ParentVariantRelativePath = variantBlock.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
             uint.TryParse(variantBlock.Attributes().FirstOrDefault(a => a.Name.LocalName == "frequency")?.Value, out this._frequency);
@@ -77,6 +86,27 @@ namespace ActorEditor.Model
 
         public string Name { get => _name; set => _name = value; }
         public string ParentVariantRelativePath { get => _parentVariantRelativePath; set => _parentVariantRelativePath = value; }
+
+        internal XElement SerializeElements()
+        {
+            var curVariant = new XElement("variant");
+            if (!string.IsNullOrEmpty(this.Name))
+                curVariant.Add(new XAttribute("name", this.Name));
+            if (!string.IsNullOrEmpty(this.ParentVariantRelativePath))
+                curVariant.Add(new XAttribute("file", this.ParentVariantRelativePath));
+            if (this.Frequency > 0)
+                curVariant.Add(new XAttribute("frequency", this.Frequency));
+            if (!string.IsNullOrEmpty(this.Mesh))
+                curVariant.Add(new XElement("mesh", this.Mesh));
+            if (!string.IsNullOrEmpty(this.Color.ToString()))
+                curVariant.Add(new XElement("color", this.Color.ToString()));
+            if (this.Props.Count > 0)
+                curVariant.Add(this.Props.SerializeElements());
+            if (this.Textures.Count > 0)
+                curVariant.Add(this.Textures.SerializeElements());
+            return curVariant;
+        }
+
         public uint Frequency { get => _frequency; set => _frequency = value; }
         public string Mesh { get => _mesh; set => _mesh = value; }
         public string Particle { get => _particle; set => _particle = value; }

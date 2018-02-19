@@ -1,7 +1,10 @@
 ﻿using ActorEditor.Model;
+using ActorEditor.Model.Entities;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,14 +29,32 @@ namespace ActorEditor
         bool _actorMode;
         bool _particleMode;
         bool _variantMode;
+        Group _currentGroup;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void SetActorMode()
         {
+            _actorMode = true;
+            _particleMode = false;
+            _variantMode = false;
+        }
+
+
+        private void SetVariantMode()
+        {
+            _actorMode = false;
+            _particleMode = false;
+            _variantMode = true;
+        }
+
+
+        private void OpenActor(object sender, RoutedEventArgs e)
+        {
+            SetActorMode();
             // Create an instance of the open file dialog box.
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
@@ -54,17 +75,20 @@ namespace ActorEditor
                 castsShadows.IsEnabled = true;
                 castsShadows.IsChecked = _actor.CastsShadows;
                 floats.IsChecked = _actor.Floats;
-                castsShadows.Visibility = Visibility.Visible;
-                floats.Visibility = Visibility.Visible;
-                listview.Visibility = Visibility.Visible;
+                actorOptions.Visibility = Visibility.Visible;
+                groupview.Visibility = Visibility.Visible;
+                variantview.Visibility = Visibility.Hidden;
+                Materials.ItemsSource = FileHandler.GetMaterialList();
                 this.DataContext = _actor.Groups;
             }
         }
 
-        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        private void Save(object sender, RoutedEventArgs e)
         {
-            if (_actor != null)
+            if (_actor != null && _actorMode && _actorMode)
                 FileHandler.SaveFile(_actor);
+            else if (_currentGroup != null && _currentGroup.Count > 0 && _variantMode)
+                FileHandler.SaveFile(_currentGroup.FirstOrDefault());
         }
 
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
@@ -72,7 +96,7 @@ namespace ActorEditor
 
         }
 
-        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        private void Exit(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
@@ -89,17 +113,151 @@ namespace ActorEditor
             _actor.Floats = (bool)floats.IsChecked;
         }
 
-        private void MenuItem_Click_4(object sender, RoutedEventArgs e)
+        private void CreateVariant(object sender, RoutedEventArgs e)
         {
+            SetVariantMode();
+            _currentGroup = new Group
+            {
+                new Variant()
+            };
 
+            GoBackButton.Visibility = Visibility.Hidden;
+            AddVariantButton.Visibility = Visibility.Hidden;
+            DeleteVariantButton.Visibility = Visibility.Hidden;
+            groupview.Visibility = Visibility.Hidden;
+            variantview.Visibility = Visibility.Visible;
+            this.DataContext = _currentGroup;
         }
 
-        private void MenuItem_Click_5(object sender, RoutedEventArgs e)
+        private void CreateActor(object sender, RoutedEventArgs e)
         {
-
+            SetActorMode();
+            _actor = new Actor();
+            floats.IsEnabled = true;
+            castsShadows.IsEnabled = true;
+            castsShadows.IsChecked = _actor.CastsShadows;
+            floats.IsChecked = _actor.Floats;
+            actorOptions.Visibility = Visibility.Visible;
+            groupview.Visibility = Visibility.Visible;
+            variantview.Visibility = Visibility.Hidden;
+            Materials.ItemsSource = FileHandler.GetMaterialList();
+            this.DataContext = _actor.Groups;
         }
 
         private void MenuItem_Click_6(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            _actor.Groups.Add(new Group());
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups);
+            view.Refresh();
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (_currentGroup == null)
+                return;
+
+            _currentGroup.Add(new Variant());
+            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
+            view.Refresh();
+        }
+
+        private void EditGroup(object sender, RoutedEventArgs e)
+        {
+            foreach(var item in grouplistview.Items)
+            {
+                var group = (Group)item;
+                if (group != null & group.IsChecked == true)
+                {
+                    _currentGroup = group;
+                    break;
+                }
+            }
+            _currentGroup = (Group)grouplistview.SelectedItem;
+
+            if (_currentGroup == null)
+                return;
+                  
+            groupview.Visibility = Visibility.Hidden;
+            variantview.Visibility = Visibility.Visible;
+            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
+            this.DataContext = _actor.Groups[groupIndex];
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            for (var i = grouplistview.Items.Count - 1; i != -1 ; --i)
+            {
+                var group = (Group)grouplistview.Items[i];
+                if (group != null & group.IsChecked == true)
+                {
+                    var groupIndex = _actor.Groups.IndexOf(group);
+                    _actor.Groups.RemoveAt(groupIndex);
+                }
+            }
+
+
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups);
+            view.Refresh();
+        }
+
+        private void DeleteVariant(object sender, RoutedEventArgs e)
+        {
+            for (var i = variantListview.Items.Count - 1; i != -1; --i)
+            {
+                var variant = (Variant)grouplistview.Items[i];
+                if (variant != null & variant.IsChecked == true)
+                {
+                    _currentGroup.Remove(variant);
+                }
+            }
+
+            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
+            view.Refresh();
+
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            groupview.Visibility = Visibility.Visible;
+            variantview.Visibility = Visibility.Hidden;
+            this.DataContext = _actor.Groups;
+        }
+
+        private void Materials_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _actor.Material = this.Materials.SelectedItem.ToString();
+        }
+
+        private void EditTextures(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EditAnimations(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EditProps(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
         {
 
         }

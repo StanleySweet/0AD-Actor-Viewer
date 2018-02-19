@@ -16,6 +16,11 @@ namespace ActorEditor.Model
         private Groups _groups;
         private string _material;
 
+        public Actor()
+        {
+            _groups = new Groups();
+        }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -61,8 +66,10 @@ namespace ActorEditor.Model
 
             foreach (var group in this.Groups)
                 root.Add(group.SerializeElements());
-
-            root.Add(new XElement("material", this.Material));
+            if (!string.IsNullOrEmpty(Material))
+                root.Add(new XElement("material", this.Material));
+            else
+                root.Add(new XElement("material", "default.xml"));
 
             return root;
         }

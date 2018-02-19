@@ -14,7 +14,7 @@ namespace ActorEditor.Model.Entities
             {
                 serializedString += "(" + prop.GetRelativePath() + ", " + prop.AttachPoint +  ")";
             }
-            return serializedString;
+            return !string.IsNullOrEmpty(serializedString) ? (serializedString.Substring(0, 10 > serializedString.Length ? 10 : serializedString.Length)) : string.Empty;
         }
 
         public XElement SerializeElements()
