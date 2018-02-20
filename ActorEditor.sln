@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorEditor", "ActorEditor\ActorEditor.csproj", "{49335880-61B4-4C1F-8569-882B6AFAC771}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActorEditor.Model.Tests", "ActorEditor.Model.Tests\ActorEditor.Model.Tests.csproj", "{ED11B1A3-C2C4-49B8-993A-43544F74F17C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActorEditor.Model", "ActorEditor.Model\ActorEditor.Model.csproj", "{03D44283-6356-46B9-BEE6-017CBD41305D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActorEditor.Model", "ActorEditor.Model\ActorEditor.Model.csproj", "{03D44283-6356-46B9-BEE6-017CBD41305D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
