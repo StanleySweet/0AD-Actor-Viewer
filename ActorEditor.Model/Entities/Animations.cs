@@ -18,15 +18,17 @@ namespace ActorEditor.Model.Entities
                     this.Add(new Animation(animation));
         }
 
-
-        public override string ToString()
+        public XElement SerializeElements()
         {
-            string serializedString = string.Empty;
-            foreach (Animation animation in this)
+            var curAnimationGroup = new XElement("animations");
+            foreach (var animation in this)
             {
-                serializedString += "(" + ")";
+                curAnimationGroup.Add(animation.SerializeElements());
             }
-            return serializedString;
+            return curAnimationGroup;
         }
+
+
+        public override string ToString() => (this.Count > 0 ? this.Count.ToString() + " animations(s)" : "No animation");
     }
 }
