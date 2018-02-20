@@ -31,7 +31,7 @@ namespace ActorEditor.Model
 
             XElement actor = actorFile.Elements().FirstOrDefault(a => a.Name == "actor");
             this.Version = uint.Parse(actor.Attributes().FirstOrDefault(a => a.Name.LocalName == "version").Value);
-            this._castsShadows = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadows") != null;
+            this._castsShadows = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadow") != null;
             this._floats = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;
             this._material = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "material").Value;
 
