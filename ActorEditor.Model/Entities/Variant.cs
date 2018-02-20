@@ -1,6 +1,7 @@
 ﻿using ActorEditor.Model.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -50,6 +51,7 @@ namespace ActorEditor.Model
             _props = new Props(variant.Elements().FirstOrDefault(x => x.Name.LocalName == "props")?.Elements());
             _textures = new Textures(variant.Elements().FirstOrDefault(x => x.Name.LocalName == "textures")?.Elements());
             _animations = new Animations(variant.Elements().FirstOrDefault(x => x.Name.LocalName == "animations")?.Elements());
+
         }
 
         public Variant(XDocument variantFile)
@@ -75,10 +77,12 @@ namespace ActorEditor.Model
                 curVariant.Add(new XAttribute("file", this.ParentVariantRelativePath));
             if (this.Frequency > 0)
                 curVariant.Add(new XAttribute("frequency", this.Frequency));
-            if (!string.IsNullOrEmpty(this.Mesh))
-                curVariant.Add(new XElement("mesh", this.Mesh));
+            if (this.Animations.Count > 0)
+                curVariant.Add(this.Animations.SerializeElements());
             if (!string.IsNullOrEmpty(this.Color.ToString()))
                 curVariant.Add(new XElement("color", this.Color.ToString()));
+            if (!string.IsNullOrEmpty(this.Mesh))
+                curVariant.Add(new XElement("mesh", this.Mesh));
             if (this.Props.Count > 0)
                 curVariant.Add(this.Props.SerializeElements());
             if (this.Textures.Count > 0)

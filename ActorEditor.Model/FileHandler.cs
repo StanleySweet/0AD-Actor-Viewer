@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,17 +12,50 @@ namespace ActorEditor.Model
     public class FileHandler
     {
 
-        public static Actor OpenFile(string filePath)
+        public static Actor OpenActorFile(string filePath)
         {
-            Actor _actor;
+            Actor actor;
             // Open the selected file to read.
-            using (var athenianDockFile = new StreamReader(@"" + filePath))
+
+            try
             {
-                var actorFile = XDocument.Parse(athenianDockFile.ReadToEnd());
-                _actor = new Actor(actorFile);
+                using (var actorStream = new StreamReader(@"" + filePath))
+                {
+                    var actorFile = XDocument.Parse(actorStream.ReadToEnd());
+                    actor = new Actor(actorFile);
+                }
+
             }
-            return _actor;
+            catch (Exception ex)
+            {
+                actor = null;
+                Debug.WriteLine("Error: Parsed file is either malformed or not a actor file.");
+            }
+
+            return actor;
         }
+
+        public static Variant OpenVariantFile(string filePath)
+        {
+            Variant variant;
+            // Open the selected file to read.
+            try
+            {
+                using (var athenianDockFile = new StreamReader(@"" + filePath))
+                {
+                    var variantFile = XDocument.Parse(athenianDockFile.ReadToEnd());
+                    variant = new Variant(variantFile);
+                }
+
+            }catch(Exception ex)
+            {
+                variant = null;
+                Debug.WriteLine("Error: Parsed file is either malformed or not a variant file.");
+            }
+
+            return variant;
+        }
+
         /// <summary>
         /// Returns the list of materials
         /// </summary>
