@@ -28,6 +28,11 @@ namespace ActorEditor.Model
         private string _relativePath;
         private TextureType _textureType;
 
+        public Texture()
+        {
+
+        }
+
         public Texture(XElement texture)
         {
             this._relativePath = texture.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
@@ -38,6 +43,14 @@ namespace ActorEditor.Model
         {
             this._relativePath = relativePath;
             this._textureType = textureType;
+        }
+
+        public XElement SerializeElements()
+        {
+            var Xtexture = new XElement("texture");
+            Xtexture.Add(new XAttribute("file", string.IsNullOrEmpty(this._relativePath) ? "null_white.dds" : _relativePath));
+            Xtexture.Add(new XAttribute("name", this.GetTextureType()));
+            return Xtexture;
         }
 
         public string GetRelativePath()

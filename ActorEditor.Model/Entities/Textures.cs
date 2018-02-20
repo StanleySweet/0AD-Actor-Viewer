@@ -33,12 +33,8 @@ namespace ActorEditor.Model.Entities
         {
             var textures = new XElement("textures");
             foreach (var texture in this)
-            {
-                var Xprop = new XElement("texture");
-                Xprop.Add(new XAttribute("file", texture.GetRelativePath()));
-                Xprop.Add(new XAttribute("name", texture.GetTextureType()));
-                textures.Add(Xprop);
-            }
+                textures.Add(texture.SerializeElements());
+            
             return textures;
         }
     }
