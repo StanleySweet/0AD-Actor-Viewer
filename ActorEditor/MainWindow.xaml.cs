@@ -82,10 +82,22 @@
                 floats.IsEnabled = true;
                 castsShadows.IsEnabled = true;
                 castsShadows.IsChecked = _actor.CastsShadows;
+
+                var index = 0;
+                foreach(var item in Materials.Items)
+                {
+                    if (item.ToString().Equals(_actor.Material))
+                        break;
+                    ++index;
+                }
+
+                Materials.SelectedIndex = index;
                 floats.IsChecked = _actor.Floats;
                 actorOptions.Visibility = Visibility.Visible;
                 groupview.Visibility = Visibility.Visible;
-                variantview.Visibility = Visibility.Hidden;
+                variantview.Visibility = Visibility.Collapsed;
+                DeleteVariantButton.Visibility = Visibility.Visible;
+                AddVariantButton.Visibility = Visibility.Visible;
                 this.DataContext = _actor.Groups;
             }
         }
@@ -125,10 +137,10 @@
                 new Variant()
             };
 
-            GoBackButton.Visibility = Visibility.Hidden;
-            AddVariantButton.Visibility = Visibility.Hidden;
-            DeleteVariantButton.Visibility = Visibility.Hidden;
-            groupview.Visibility = Visibility.Hidden;
+            GoBackButton.Visibility = Visibility.Collapsed;
+            AddVariantButton.Visibility = Visibility.Collapsed;
+            DeleteVariantButton.Visibility = Visibility.Collapsed;
+            groupview.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
             this.DataContext = _currentGroup;
         }
@@ -143,7 +155,7 @@
             floats.IsChecked = _actor.Floats;
             actorOptions.Visibility = Visibility.Visible;
             groupview.Visibility = Visibility.Visible;
-            variantview.Visibility = Visibility.Hidden;
+            variantview.Visibility = Visibility.Collapsed;
             Materials.ItemsSource = FileHandler.GetMaterialList();
             this.DataContext = _actor.Groups;
         }
@@ -183,10 +195,10 @@
                     variant
                 };
 
-                GoBackButton.Visibility = Visibility.Hidden;
-                AddVariantButton.Visibility = Visibility.Hidden;
-                DeleteVariantButton.Visibility = Visibility.Hidden;
-                groupview.Visibility = Visibility.Hidden;
+                GoBackButton.Visibility = Visibility.Collapsed;
+                AddVariantButton.Visibility = Visibility.Collapsed;
+                DeleteVariantButton.Visibility = Visibility.Collapsed;
+                groupview.Visibility = Visibility.Collapsed;
                 variantview.Visibility = Visibility.Visible;
                 this.DataContext = _currentGroup;
             }
@@ -202,37 +214,20 @@
 
         }
 
-        private void AddAnimation(object sender, RoutedEventArgs e)
+
+        private void AddGroup(object sender, RoutedEventArgs e)
         {
-            var animations = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations;
-            animations.Add(new Animation());
-            ICollectionView view = CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations);
+            _actor.Groups.Add(new Group());
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups);
             view.Refresh();
 
-        }
-
-        private void AddVariant(object sender, RoutedEventArgs e)
-        {
-            if (_currentGroup == null)
-                return;
-
-            _currentGroup.Add(new Variant());
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
-        }
-
-        private void GoBackToGroupView(object sender, RoutedEventArgs e)
-        {
-            groupview.Visibility = Visibility.Visible;
-            variantview.Visibility = Visibility.Hidden;
-            this.DataContext = _actor.Groups;
         }
 
         private void GoBackToVariantView(object sender, RoutedEventArgs e)
         {
-            animationView.Visibility = Visibility.Hidden;
-            propView.Visibility = Visibility.Hidden;
+            animationView.Visibility = Visibility.Collapsed;
+            textureView.Visibility = Visibility.Collapsed;
+            propView.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
             this.DataContext = _currentGroup;
         }
@@ -251,39 +246,6 @@
 
 
             ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups);
-            view.Refresh();
-        }
-
-        private void DeleteVariant(object sender, RoutedEventArgs e)
-        {
-            for (var i = variantListview.Items.Count - 1; i != -1; --i)
-            {
-                var variant = (Variant)variantListview.Items[i];
-                if (variant != null & variant.IsChecked == true)
-                {
-                    _currentGroup.Remove(variant);
-                }
-            }
-
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
-
-        }
-
-        private void DeleteAnimation(object sender, RoutedEventArgs e)
-        {
-            for (var i = animationListView.Items.Count - 1; i != -1; --i)
-            {
-                var animation = (Animation)animationListView.Items[i];
-                if (animation != null & animation.IsChecked == true)
-                {
-                    _currentVariant.Animations.Remove(animation);
-                }
-            }
-
-            var animations = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations;
-            ICollectionView view = CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations);
             view.Refresh();
         }
 
@@ -308,15 +270,45 @@
             if (_currentGroup == null)
                 return;
 
-            groupview.Visibility = Visibility.Hidden;
+            groupview.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
             var groupIndex = _actor.Groups.IndexOf(_currentGroup);
             this.DataContext = _actor.Groups[groupIndex];
         }
 
-        private void EditTextures(object sender, RoutedEventArgs e)
-        {
 
+
+
+        #region Animations
+        private void AddAnimation(object sender, RoutedEventArgs e)
+        {
+            if (_currentVariant == null)
+                return;
+
+            var animations = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations;
+            animations.Add(new Animation());
+            ICollectionView view = CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations);
+            view.Refresh();
+
+        }
+
+        private void DeleteAnimation(object sender, RoutedEventArgs e)
+        {
+            if (_currentVariant == null)
+                return;
+
+            for (var i = animationListView.Items.Count - 1; i != -1; --i)
+            {
+                var animation = (Animation)animationListView.Items[i];
+                if (animation != null & animation.IsChecked == true)
+                {
+                    _currentVariant.Animations.Remove(animation);
+                }
+            }
+
+            var animations = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations;
+            ICollectionView view = CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations);
+            view.Refresh();
         }
 
         private void EditAnimations(object sender, RoutedEventArgs e)
@@ -327,91 +319,8 @@
                 return;
 
             animationView.Visibility = Visibility.Visible;
-            variantview.Visibility = Visibility.Hidden;
+            variantview.Visibility = Visibility.Collapsed;
             this.DataContext = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Animations;
-        }
-
-        private void EditProps(object sender, RoutedEventArgs e)
-        {
-            _currentVariant = (Variant)variantListview.SelectedItem;
-
-            if (_currentVariant == null)
-                return;
-
-            propView.Visibility = Visibility.Visible;
-            variantview.Visibility = Visibility.Hidden;
-            this.DataContext = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props;
-        }
-
-        private void BrowseForVariant(object sender, RoutedEventArgs e)
-        {
-            // Create an instance of the open file dialog box.
-            OpenFileDialog variantFile = new OpenFileDialog();
-
-            // Set filter options and filter index.
-            variantFile.Filter = "XML Files (.xml)|*.xml";
-            variantFile.FilterIndex = 1;
-
-            variantFile.Multiselect = false;
-
-            // Call the ShowDialog method to show the dialog box.
-            bool? userClickedOK = variantFile.ShowDialog();
-
-            // Process input if the user clicked OK.
-            if (userClickedOK == true)
-            {
-                Variant variant;
-                for (var i = variantListview.Items.Count - 1; i != -1; --i)
-                {
-                    variant = (Variant)grouplistview.Items[i];
-                    if (variant != null & variant.IsChecked == true)
-                    {
-                        variant.ParentVariantRelativePath = variantFile.FileName;
-                    }
-                }
-
-                variant = (Variant)variantListview.SelectedItem;
-                variant.ParentVariantRelativePath = variantFile.FileName;
-            }
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
-        }
-
-        private void BrowseForMesh(object sender, RoutedEventArgs e)
-        {
-
-            // Create an instance of the open file dialog box.
-            OpenFileDialog meshFile = new OpenFileDialog();
-
-            // Set filter options and filter index.
-            meshFile.Filter = "DAE Files (.dae)|*.dae";
-            meshFile.FilterIndex = 1;
-
-            meshFile.Multiselect = false;
-
-            // Call the ShowDialog method to show the dialog box.
-            bool? userClickedOK = meshFile.ShowDialog();
-
-            // Process input if the user clicked OK.
-            if (userClickedOK == true)
-            {
-                Variant variant;
-                for (var i = variantListview.Items.Count - 1; i != -1; --i)
-                {
-                    variant = (Variant)grouplistview.Items[i];
-                    if (variant != null & variant.IsChecked == true)
-                    {
-                        variant.Mesh = meshFile.FileName;
-                    }
-                }
-
-                variant = (Variant)variantListview.SelectedItem;
-                variant.Mesh = meshFile.FileName;
-            }
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
         }
 
         private void BrowseForAnimation(object sender, RoutedEventArgs e)
@@ -449,6 +358,49 @@
             //view.Refresh();
         }
 
+
+        #endregion
+        #region Props
+        private void EditProps(object sender, RoutedEventArgs e)
+        {
+            _currentVariant = (Variant)variantListview.SelectedItem;
+
+            if (_currentVariant == null)
+                return;
+
+            propView.Visibility = Visibility.Visible;
+            variantview.Visibility = Visibility.Collapsed;
+            this.DataContext = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props;
+        }
+
+        private void DeleteProp(object sender, RoutedEventArgs e)
+        {
+            _currentVariant = (Variant)variantListview.SelectedItem;
+
+            if (_currentVariant == null)
+                return;
+
+            for (var i = propViewListView.Items.Count - 1; i != -1; --i)
+            {
+                var prop = (Prop)propViewListView.Items[i];
+                if (prop != null & prop.IsChecked == true)
+                {
+                    _currentVariant.Props.Remove(prop);
+                }
+            }
+            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props).Refresh();
+        }
+
+        private void AddProp(object sender, RoutedEventArgs e)
+        {
+            if (_currentVariant == null)
+                return;
+
+            var props = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props;
+            props.Add(new Prop());
+            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props).Refresh();
+        }
+
         private void BrowseForProp(object sender, RoutedEventArgs e)
         {
             //// Create an instance of the open file dialog box.
@@ -484,39 +436,160 @@
             //view.Refresh();
         }
 
-        private void DeleteProp(object sender, RoutedEventArgs e)
+        #endregion
+
+        private void GoBackToGroupView(object sender, RoutedEventArgs e)
         {
-            for (var i = propViewListView.Items.Count - 1; i != -1; --i)
+            groupview.Visibility = Visibility.Visible;
+            variantview.Visibility = Visibility.Collapsed;
+            this.DataContext = _actor.Groups;
+        }
+
+        private void AddVariant(object sender, RoutedEventArgs e)
+        {
+            if (_currentGroup == null)
+                return;
+
+            _currentGroup.Add(new Variant());
+            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
+            view.Refresh();
+        }
+
+        private void DeleteVariant(object sender, RoutedEventArgs e)
+        {
+            for (var i = variantListview.Items.Count - 1; i != -1; --i)
             {
-                var prop = (Prop)propViewListView.Items[i];
-                if (prop != null & prop.IsChecked == true)
+                var variant = (Variant)variantListview.Items[i];
+                if (variant != null & variant.IsChecked == true)
                 {
-                    _currentVariant.Props.Remove(prop);
+                    _currentGroup.Remove(variant);
                 }
             }
-            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props).Refresh();
+
+            CollectionViewSource.GetDefaultView(_currentGroup).Refresh();
         }
 
-        private void AddProp(object sender, RoutedEventArgs e)
+        private void EditTextures(object sender, RoutedEventArgs e)
         {
-            var props = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props;
-            props.Add(new Prop());
-            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Props).Refresh();
+            _currentVariant = (Variant)variantListview.SelectedItem;
+
+            if (_currentVariant == null)
+                return;
+
+            textureView.Visibility = Visibility.Visible;
+            variantview.Visibility = Visibility.Collapsed;
+            this.DataContext = _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Textures;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BrowseForVariant(object sender, RoutedEventArgs e)
+        {
+            // Create an instance of the open file dialog box.
+            OpenFileDialog variantFile = new OpenFileDialog();
+
+            // Set filter options and filter index.
+            variantFile.Filter = "XML Files (.xml)|*.xml";
+            variantFile.FilterIndex = 1;
+
+            variantFile.Multiselect = false;
+
+            // Call the ShowDialog method to show the dialog box.
+            bool? userClickedOK = variantFile.ShowDialog();
+
+            // Process input if the user clicked OK.
+            if (userClickedOK == true)
+            {
+                Variant variant;
+                for (var i = variantListview.Items.Count - 1; i != -1; --i)
+                {
+                    variant = (Variant)grouplistview.Items[i];
+                    if (variant != null & variant.IsChecked == true)
+                    {
+                        variant.ParentVariantRelativePath = variantFile.FileName;
+                    }
+                }
+
+                variant = (Variant)variantListview.SelectedItem;
+                if (variant == null)
+                    return;
+
+                variant.ParentVariantRelativePath = variantFile.FileName;
+            }
+            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
+            view.Refresh();
+        }
+
+        private void BrowseForMesh(object sender, RoutedEventArgs e)
         {
 
+            // Create an instance of the open file dialog box.
+            OpenFileDialog meshFile = new OpenFileDialog
+            {
+                // Set filter options and filter index.
+                Filter = "DAE Files (.dae)|*.dae",
+                FilterIndex = 1,
+
+                Multiselect = false
+            };
+
+            // Call the ShowDialog method to show the dialog box.
+            bool? userClickedOK = meshFile.ShowDialog();
+
+            // Process input if the user clicked OK.
+            if (userClickedOK == true)
+            {
+                for (var i = 0; i != variantListview.Items.Count; ++i)
+                {
+                    var variant = (Variant)grouplistview.Items[i];
+                    if (variant != null & variant.IsChecked == true)
+                    {
+                        variant.Mesh = meshFile.FileName;
+                    }
+                }
+
+                // _currentVariant.Mesh = meshFile.FileName;
+            }
+
+            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
+            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
+            view.Refresh();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+
+        #region Textures
+
+        private void AddTexture(object sender, RoutedEventArgs e)
         {
+            if (_currentVariant == null)
+                return;
 
+            _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Textures.Add(new Texture());
+            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Textures).Refresh();
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void DeleteTexture(object sender, RoutedEventArgs e)
         {
+            if (_currentVariant == null)
+                return;
 
+            for (var i = textureViewListView.Items.Count - 1; i != -1; --i)
+            {
+                var texture = (Texture)propViewListView.Items[i];
+                if (texture != null & texture.IsChecked == true)
+                {
+                    _currentVariant.Textures.Remove(texture);
+                }
+            }
+
+            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Textures).Refresh();
         }
+
+        private void BrowseForTexture(object sender, RoutedEventArgs e)
+        {
+            //All Files(*.*)| *.*
+            //All Files(*.dds)| *.dds
+        } 
+        #endregion
     }
 }
