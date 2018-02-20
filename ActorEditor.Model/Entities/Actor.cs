@@ -60,7 +60,7 @@ namespace ActorEditor.Model
             root.Add(new XAttribute("version", this.Version));
 
             if (this.CastsShadows)
-                root.Add(new XElement("castshadows"));
+                root.Add(new XElement("castshadow"));
             if (this.Floats)
                 root.Add(new XElement("float"));
 
