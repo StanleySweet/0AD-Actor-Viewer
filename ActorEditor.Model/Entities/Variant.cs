@@ -71,12 +71,12 @@ namespace ActorEditor.Model
         internal XElement SerializeElements()
         {
             var curVariant = new XElement("variant");
-            if (!string.IsNullOrEmpty(this.Name))
-                curVariant.Add(new XAttribute("name", this.Name));
             if (!string.IsNullOrEmpty(this.ParentVariantRelativePath))
                 curVariant.Add(new XAttribute("file", this.ParentVariantRelativePath));
             if (this.Frequency > 0)
                 curVariant.Add(new XAttribute("frequency", this.Frequency));
+            if (!string.IsNullOrEmpty(this.Name))
+                curVariant.Add(new XAttribute("name", this.Name));
             if (this.Animations.Count > 0)
                 curVariant.Add(this.Animations.SerializeElements());
             if (!string.IsNullOrEmpty(this.Color.ToString()))

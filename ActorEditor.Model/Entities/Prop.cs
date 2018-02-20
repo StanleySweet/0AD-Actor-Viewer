@@ -31,16 +31,16 @@ namespace ActorEditor.Model
         internal XElement SerializeElements()
         {
             var Xprop = new XElement("prop");
-            if (!string.IsNullOrEmpty(this.attachPoint))
-                Xprop.Add(new XAttribute("attachpoint", this.attachPoint));
             if (!string.IsNullOrEmpty(this._relativePath))
                 Xprop.Add(new XAttribute("actor", this._relativePath));
-            if (_IsSelectable)
-                Xprop.Add(new XAttribute("selectable", 1));
-            if (_minHeight != 0)
-                Xprop.Add(new XAttribute("minheight", _minHeight));
+            if (!string.IsNullOrEmpty(this.attachPoint))
+                Xprop.Add(new XAttribute("attachpoint", this.attachPoint));
             if (_maxHeight != 0)
                 Xprop.Add(new XAttribute("maxheight", _maxHeight));
+            if (_minHeight != 0)
+                Xprop.Add(new XAttribute("minheight", _minHeight));
+            if (_IsSelectable)
+                Xprop.Add(new XAttribute("selectable", 1));
             return Xprop;
         }
 

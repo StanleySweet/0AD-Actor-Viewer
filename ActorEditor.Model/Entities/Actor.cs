@@ -30,10 +30,10 @@ namespace ActorEditor.Model
             _groups = new Groups();
 
             XElement actor = actorFile.Elements().FirstOrDefault(a => a.Name == "actor");
-            this.Version = uint.Parse(actor.Attributes().FirstOrDefault(a => a.Name.LocalName == "version").Value);
+            this.Version = uint.Parse(actor.Attributes().FirstOrDefault(a => a.Name.LocalName == "version")?.Value);
             this._castsShadows = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadow") != null;
             this._floats = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;
-            this._material = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "material").Value;
+            this._material = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "material")?.Value;
 
             var xElementGroups = actor.Elements().Where(a => a.Name.LocalName == "group");
             foreach (var xElementGroup in xElementGroups)
@@ -41,9 +41,8 @@ namespace ActorEditor.Model
                 var variants = new Group();
                 var xElementVariants = xElementGroup.Elements().Where(a => a.Name.LocalName == "variant");
                 foreach (var xElementVariant in xElementVariants)
-                {
                     variants.Add(new Variant(xElementVariant));
-                }
+
                 _groups.Add(variants);
             }
         }
