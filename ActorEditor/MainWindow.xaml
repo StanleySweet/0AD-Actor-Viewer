@@ -8,18 +8,11 @@
  mc:Ignorable="d" Title="0 A.D. Actor Editor" MinHeight="470" MaxHeight="470" Width="700" Height="350" MaxWidth="700" MinWidth="700">
     <Grid>
         <StackPanel>
-            <smtx:XamlDisplay Key="color_zones_inverted">
-                <materialDesign:ColorZone Mode="Inverted" Padding="16" Margin="0,0,-347.5,0">
+            <smtx:XamlDisplay Key="color_zones_primary_light" Height="58">
+                <materialDesign:ColorZone Mode="PrimaryDark" Padding="16" Margin="0,0,-347.5,0">
                     <DockPanel>
-                        <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges">
-                            <ListBox>
-                                <ListBoxItem>Hello World</ListBoxItem>
-                                <ListBoxItem>Nice Popup</ListBoxItem>
-                                <ListBoxItem>Goodbye.</ListBoxItem>
-                            </ListBox>
-                        </materialDesign:PopupBox>
                         <Menu HorizontalAlignment="Left" DockPanel.Dock="Top" >
-                            <MenuItem Header="_File">
+                            <MenuItem Header="_File" Height="27">
                                 <MenuItem Header="_New" >
                                     <MenuItem Header="_Actor" Click="CreateActor"/>
                                     <MenuItem IsEnabled="False" Header="_Particle" Click="MenuItem_Click_6"/>
@@ -41,10 +34,14 @@
                 </materialDesign:ColorZone>
             </smtx:XamlDisplay>
             <WrapPanel Visibility="Collapsed" Name="actorOptions" Margin="25 25 0 0">
-                <CheckBox VerticalAlignment="Center"  IsEnabled="False" Name="castsShadows" Unchecked="castsShadows_Checked" Checked="castsShadows_Checked" Content="Casts Shadows" Margin="25 0 0 0"/>
-                <CheckBox VerticalAlignment="Center"  IsEnabled="False" Name="floats" Unchecked="floats_Checked" Checked="floats_Checked" Content="Floats on water" Margin="25 0 0 0"/>
+                <CheckBox VerticalAlignment="Center"  IsEnabled="False" Name="castsShadows" Unchecked="CastsShadows_Checked" Checked="CastsShadows_Checked" Content="Casts Shadows" Margin="25 0 0 0"/>
+                <CheckBox VerticalAlignment="Center"  IsEnabled="False" Name="floats" Unchecked="Floats_Checked" Checked="Floats_Checked" Content="Floats on water" Margin="25 0 0 0"/>
                 <ComboBox VerticalAlignment="Center"  Name="Materials" Width="150" Margin="25 0 0 0" SelectionChanged="Materials_SelectionChanged"/>
             </WrapPanel>
+            <StackPanel Name="logoBox" Visibility="Visible">
+                <Image Name="Logo" VerticalAlignment="Center"  HorizontalAlignment="Center" Source="Wildfire plain black 2048.png" Margin="0 50 0 0"  Height="228" Width="228"/>
+                <TextBlock HorizontalAlignment="Center" FontSize="20">Create a new file, or open one to get started</TextBlock>
+            </StackPanel>
             <StackPanel Name="groupview" Visibility="Collapsed">
                 <ListView Name="grouplistview" Width="590" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True" ItemsSource="{Binding}" AlternationCount="2">
                     <ListView.ItemContainerStyle>

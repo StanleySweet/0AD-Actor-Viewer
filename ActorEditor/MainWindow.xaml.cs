@@ -96,15 +96,17 @@
                 actorOptions.Visibility = Visibility.Visible;
                 groupview.Visibility = Visibility.Visible;
                 variantview.Visibility = Visibility.Collapsed;
+                logoBox.Visibility = Visibility.Collapsed;
                 DeleteVariantButton.Visibility = Visibility.Visible;
                 AddVariantButton.Visibility = Visibility.Visible;
+                GoBackButton.Visibility = Visibility.Visible;
                 this.DataContext = _actor.Groups;
             }
         }
 
         private void Save(object sender, RoutedEventArgs e)
         {
-            if (_actor != null && _actorMode && _actorMode)
+            if (_actor != null && _actorMode)
                 FileHandler.SaveFile(_actor);
             else if (_currentGroup != null && _currentGroup.Count > 0 && _variantMode)
                 FileHandler.SaveFile(_currentGroup.FirstOrDefault());
@@ -119,12 +121,12 @@
             }
         }
 
-        private void castsShadows_Checked(object sender, RoutedEventArgs e)
+        private void CastsShadows_Checked(object sender, RoutedEventArgs e)
         {
             _actor.CastsShadows = (bool)castsShadows.IsChecked;
         }
 
-        private void floats_Checked(object sender, RoutedEventArgs e)
+        private void Floats_Checked(object sender, RoutedEventArgs e)
         {
             _actor.Floats = (bool)floats.IsChecked;
         }
@@ -141,6 +143,7 @@
             AddVariantButton.Visibility = Visibility.Collapsed;
             DeleteVariantButton.Visibility = Visibility.Collapsed;
             groupview.Visibility = Visibility.Collapsed;
+            logoBox.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
             this.DataContext = _currentGroup;
         }
@@ -155,7 +158,11 @@
             floats.IsChecked = _actor.Floats;
             actorOptions.Visibility = Visibility.Visible;
             groupview.Visibility = Visibility.Visible;
+            logoBox.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Collapsed;
+            DeleteVariantButton.Visibility = Visibility.Visible;
+            AddVariantButton.Visibility = Visibility.Visible;
+            GoBackButton.Visibility = Visibility.Visible;
             Materials.ItemsSource = FileHandler.GetMaterialList();
             this.DataContext = _actor.Groups;
         }
@@ -199,6 +206,7 @@
                 AddVariantButton.Visibility = Visibility.Collapsed;
                 DeleteVariantButton.Visibility = Visibility.Collapsed;
                 groupview.Visibility = Visibility.Collapsed;
+                logoBox.Visibility = Visibility.Collapsed;
                 variantview.Visibility = Visibility.Visible;
                 this.DataContext = _currentGroup;
             }
@@ -214,13 +222,10 @@
 
         }
 
-
         private void AddGroup(object sender, RoutedEventArgs e)
         {
             _actor.Groups.Add(new Group());
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups);
-            view.Refresh();
-
+            CollectionViewSource.GetDefaultView(_actor.Groups).Refresh();
         }
 
         private void GoBackToVariantView(object sender, RoutedEventArgs e)
@@ -237,16 +242,14 @@
             for (var i = grouplistview.Items.Count - 1; i != -1; --i)
             {
                 var group = (Group)grouplistview.Items[i];
-                if (group != null & group.IsChecked == true)
+                if (group != null && group.IsChecked == true)
                 {
                     var groupIndex = _actor.Groups.IndexOf(group);
                     _actor.Groups.RemoveAt(groupIndex);
                 }
             }
 
-
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups);
-            view.Refresh();
+            CollectionViewSource.GetDefaultView(_actor.Groups).Refresh();
         }
 
         private void Materials_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -259,13 +262,14 @@
             foreach (var item in grouplistview.Items)
             {
                 var group = (Group)item;
-                if (group != null & group.IsChecked == true)
+                if (group != null && group.IsChecked)
                 {
                     _currentGroup = group;
                     break;
                 }
             }
-            _currentGroup = (Group)grouplistview.SelectedItem;
+            if(_currentGroup == null)
+                _currentGroup = (Group)grouplistview.SelectedItem;
 
             if (_currentGroup == null)
                 return;
@@ -300,7 +304,7 @@
             for (var i = animationListView.Items.Count - 1; i != -1; --i)
             {
                 var animation = (Animation)animationListView.Items[i];
-                if (animation != null & animation.IsChecked == true)
+                if (animation != null && animation.IsChecked == true)
                 {
                     _currentVariant.Animations.Remove(animation);
                 }
@@ -344,7 +348,7 @@
             //    for (var i = variantListview.Items.Count - 1; i != -1; --i)
             //    {
             //        variant = (Variant)grouplistview.Items[i];
-            //        if (variant != null & variant.IsChecked == true)
+            //        if (variant != null && variant.IsChecked == true)
             //        {
             //            variant.Mesh = animationFile.FileName;
             //        }
@@ -383,7 +387,7 @@
             for (var i = propViewListView.Items.Count - 1; i != -1; --i)
             {
                 var prop = (Prop)propViewListView.Items[i];
-                if (prop != null & prop.IsChecked == true)
+                if (prop != null && prop.IsChecked == true)
                 {
                     _currentVariant.Props.Remove(prop);
                 }
@@ -422,7 +426,7 @@
             //    for (var i = variantListview.Items.Count - 1; i != -1; --i)
             //    {
             //        variant = (Variant)grouplistview.Items[i];
-            //        if (variant != null & variant.IsChecked == true)
+            //        if (variant != null && variant.IsChecked == true)
             //        {
             //            variant.Mesh = animationFile.FileName;
             //        }
@@ -442,6 +446,7 @@
         {
             groupview.Visibility = Visibility.Visible;
             variantview.Visibility = Visibility.Collapsed;
+            _currentGroup = null;
             this.DataContext = _actor.Groups;
         }
 
@@ -461,7 +466,7 @@
             for (var i = variantListview.Items.Count - 1; i != -1; --i)
             {
                 var variant = (Variant)variantListview.Items[i];
-                if (variant != null & variant.IsChecked == true)
+                if (variant != null && variant.IsChecked == true)
                 {
                     _currentGroup.Remove(variant);
                 }
@@ -503,7 +508,7 @@
                 for (var i = variantListview.Items.Count - 1; i != -1; --i)
                 {
                     variant = (Variant)grouplistview.Items[i];
-                    if (variant != null & variant.IsChecked == true)
+                    if (variant != null && variant.IsChecked == true)
                     {
                         variant.ParentVariantRelativePath = variantFile.FileName;
                     }
@@ -542,10 +547,8 @@
                 for (var i = 0; i != variantListview.Items.Count; ++i)
                 {
                     var variant = (Variant)grouplistview.Items[i];
-                    if (variant != null & variant.IsChecked == true)
-                    {
+                    if (variant != null && variant.IsChecked == true)
                         variant.Mesh = meshFile.FileName;
-                    }
                 }
 
                 // _currentVariant.Mesh = meshFile.FileName;
@@ -576,7 +579,7 @@
             for (var i = textureViewListView.Items.Count - 1; i != -1; --i)
             {
                 var texture = (Texture)propViewListView.Items[i];
-                if (texture != null & texture.IsChecked == true)
+                if (texture != null && texture.IsChecked == true)
                 {
                     _currentVariant.Textures.Remove(texture);
                 }
