@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ActorEditor.Model.External;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -29,7 +30,7 @@ namespace ActorEditor.Model
             catch (Exception ex)
             {
                 actor = null;
-                Debug.WriteLine("Error: Parsed file is either malformed or not a actor file.");
+                Debug.WriteLine("Error: Parsed file is either malformed or not a actor file. " + ex);
             }
 
             return actor;
@@ -50,7 +51,7 @@ namespace ActorEditor.Model
             }catch(Exception ex)
             {
                 variant = null;
-                Debug.WriteLine("Error: Parsed file is either malformed or not a variant file.");
+                Debug.WriteLine("Error: Parsed file is either malformed or not a variant file. " + ex);
             }
 
             return variant;
@@ -62,12 +63,11 @@ namespace ActorEditor.Model
         /// <returns></returns>
         public static List<string> GetMaterialList()
         {
-            string path = @"E:\materials\";
+            string path = @"G:\materials\";
             var pathList = Directory.GetFiles(path).ToList();
             for (int i = 0; i != pathList.Count;++i)
-            {
                 pathList[i] = pathList[i].Replace(path, "");
-            }
+
             return pathList;
         }
 
@@ -78,11 +78,11 @@ namespace ActorEditor.Model
         /// <returns></returns>
         public static bool SaveFile(Actor actor)
         {
-            using (var file = new StreamWriter(@"E:\test.xml"))
+            using (var file = new StreamWriter(@"G:\test.xml"))
             {
                 XmlWriterSettings settings = new XmlWriterSettings
                 {
-                    Encoding = Encoding.UTF8,
+                    Encoding = UpperCaseUTF8Encoding.UpperCaseUTF8,
                     ConformanceLevel = ConformanceLevel.Document,
                     OmitXmlDeclaration = false,
                     CloseOutput = true,
@@ -107,11 +107,11 @@ namespace ActorEditor.Model
         /// <returns></returns>
         public static bool SaveFile(Variant variant)
         {
-            using (var file = new StreamWriter(@"E:\test.xml"))
+            using (var file = new StreamWriter(@"G:\test.xml"))
             {
                 XmlWriterSettings settings = new XmlWriterSettings
                 {
-                    Encoding = Encoding.UTF8,
+                    Encoding = UpperCaseUTF8Encoding.UpperCaseUTF8,
                     ConformanceLevel = ConformanceLevel.Document,
                     OmitXmlDeclaration = false,
                     CloseOutput = true,
