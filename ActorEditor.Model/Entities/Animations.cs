@@ -29,6 +29,6 @@ namespace ActorEditor.Model.Entities
         }
 
 
-        public override string ToString() => (this.Count > 0 ? this.Count.ToString() + " animations(s)" : "No animation");
+        public override string ToString() => (this.Count > 0 ? this.Count.ToString() + " animation(s)" : "No animation");
     }
 }
