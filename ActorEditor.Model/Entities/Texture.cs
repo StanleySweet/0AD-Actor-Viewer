@@ -45,24 +45,16 @@ namespace ActorEditor.Model
             this._textureType = textureType;
         }
 
+        public bool IsChecked { get; set; }
+        public string RelativePath { get => _relativePath; set => _relativePath = value; }
+        public TextureType TextureType { get => _textureType; set => _textureType = value; }
+
         public XElement SerializeElements()
         {
             var Xtexture = new XElement("texture");
             Xtexture.Add(new XAttribute("file", string.IsNullOrEmpty(this._relativePath) ? "null_white.dds" : _relativePath));
-            Xtexture.Add(new XAttribute("name", this.GetTextureType()));
+            Xtexture.Add(new XAttribute("name", this._textureType));
             return Xtexture;
         }
-
-        public string GetRelativePath()
-        { return this._relativePath; }
-
-        public void SetRelativePath(string value)
-        { this._relativePath = value; }
-
-        public TextureType GetTextureType()
-        { return this._textureType; }
-
-        public void SetTextureType(TextureType value)
-        { this._textureType = value; }
     }
 }
