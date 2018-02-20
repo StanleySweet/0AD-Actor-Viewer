@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actor version="1">
-  <castshadows />
+  <castshadow />
   <group>
     <variant name="Blacksmith">
       <mesh>structural/celt_blacksmith_struct1.dae</mesh>
