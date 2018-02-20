@@ -19,15 +19,7 @@ namespace ActorEditor.Model.Entities
                     this.Add(new Texture(texture));
         }
 
-        public override string ToString()
-        {
-            string serializedString = string.Empty;
-            foreach(Texture texture in this)
-            {
-                serializedString += "(" + texture.GetRelativePath() + ")";
-            }
-            return serializedString;
-        }
+        public override string ToString() => (this.Count > 0 ? this.Count.ToString() + " texture(s)" : "No texture");
 
         public XElement SerializeElements()
         {
