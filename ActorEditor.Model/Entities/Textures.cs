@@ -7,6 +7,18 @@ namespace ActorEditor.Model.Entities
 {
     public class Textures : HashSet<Texture>
     {
+        public static readonly int MAX_NUMBER_OF_TEXTURES = 4;
+
+        /// <summary>
+        /// Add an element to the collection.
+        /// </summary>
+        /// <param name="texture"></param>
+        public new void Add(Texture texture)
+        {
+            if(this.Count < MAX_NUMBER_OF_TEXTURES)
+                base.Add(texture);
+        }
+
         public Textures()
         {
 
