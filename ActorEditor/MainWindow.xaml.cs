@@ -90,7 +90,8 @@
                         break;
                     ++index;
                 }
-
+                SaveButton.IsEnabled = true;
+                SaveMenu.IsEnabled = true;
                 Materials.SelectedIndex = index;
                 floats.IsChecked = _actor.Floats;
                 actorOptions.Visibility = Visibility.Visible;
@@ -138,7 +139,8 @@
             {
                 new Variant()
             };
-
+            SaveButton.IsEnabled = true;
+            SaveMenu.IsEnabled = true;
             GoBackButton.Visibility = Visibility.Collapsed;
             AddVariantButton.Visibility = Visibility.Collapsed;
             DeleteVariantButton.Visibility = Visibility.Collapsed;
@@ -156,6 +158,8 @@
             castsShadows.IsEnabled = true;
             castsShadows.IsChecked = _actor.CastsShadows;
             floats.IsChecked = _actor.Floats;
+            SaveButton.IsEnabled = true;
+            SaveMenu.IsEnabled = true;
             actorOptions.Visibility = Visibility.Visible;
             groupview.Visibility = Visibility.Visible;
             logoBox.Visibility = Visibility.Collapsed;
@@ -203,6 +207,8 @@
                 };
 
                 GoBackButton.Visibility = Visibility.Collapsed;
+                SaveButton.IsEnabled = true;
+                SaveMenu.IsEnabled = true;
                 AddVariantButton.Visibility = Visibility.Collapsed;
                 DeleteVariantButton.Visibility = Visibility.Collapsed;
                 groupview.Visibility = Visibility.Collapsed;
@@ -212,7 +218,7 @@
             }
         }
 
-        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        private void SaveAs(object sender, RoutedEventArgs e)
         {
 
         }
@@ -276,8 +282,7 @@
 
             groupview.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            this.DataContext = _actor.Groups[groupIndex];
+            this.DataContext = _currentGroup;
         }
 
 
@@ -567,8 +572,8 @@
             if (_currentVariant == null)
                 return;
 
-            _currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Textures.Add(new Texture());
-            CollectionViewSource.GetDefaultView(_currentGroup.FirstOrDefault(a => a.Equals(_currentVariant)).Textures).Refresh();
+            _currentVariant.Textures.Add(new Texture());
+            CollectionViewSource.GetDefaultView(_currentVariant.Textures).Refresh();
         }
 
         private void DeleteTexture(object sender, RoutedEventArgs e)
@@ -592,7 +597,22 @@
         {
             //All Files(*.*)| *.*
             //All Files(*.dds)| *.dds
-        } 
+        }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
