@@ -23,8 +23,6 @@ namespace ActorEditor.Model
             { "aoTex", TextureType.aoTex}
         };
 
-
-
         private string _relativePath;
         private TextureType _textureType;
 
