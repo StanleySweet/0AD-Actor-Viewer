@@ -5,7 +5,7 @@
     using Microsoft.Win32;
     using System;
     using System.ComponentModel;
-    using System.Diagnostics;
+    using System.Configuration;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
@@ -34,6 +34,7 @@
         {
             InitializeComponent();
             Materials.ItemsSource = FileHandler.GetMaterialList();
+            Materials.ItemsSource = FileHandler.GetMaterialList(ConfigurationManager.AppSettings["material_path"]);
         }
 
         private void CastsShadows_Checked(object sender, RoutedEventArgs e)
