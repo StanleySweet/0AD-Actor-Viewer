@@ -23,6 +23,7 @@
         private bool _actorMode;
         private bool _particleMode;
         private bool _soundGroupMode;
+        private string _currentFilePath;
         private bool _variantMode;
         private bool _IsInDarkMode;
         private Group _currentGroup;
@@ -33,7 +34,6 @@
         public MainWindow()
         {
             InitializeComponent();
-            Materials.ItemsSource = FileHandler.GetMaterialList();
             Materials.ItemsSource = FileHandler.GetMaterialList(ConfigurationManager.AppSettings["material_path"]);
         }
 
@@ -47,24 +47,9 @@
             _actor.Floats = (bool)floats.IsChecked;
         }
 
-        private void MenuItem_Click_6(object sender, RoutedEventArgs e)
+        private void Materials_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
-        }
-
-        private void OnCopy(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (e.Parameter is string stringValue)
-            {
-                try
-                {
-                    Clipboard.SetDataObject(stringValue);
-                }
-                catch (Exception ex)
-                {
-                    Trace.WriteLine(ex.ToString());
-                }
-            }
+            _actor.Material = this.Materials.SelectedItem.ToString();
         }
 
         private void AddGroup(object sender, RoutedEventArgs e)
@@ -86,11 +71,6 @@
             }
 
             CollectionViewSource.GetDefaultView(_actor.Groups).Refresh();
-        }
-
-        private void Materials_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            _actor.Material = this.Materials.SelectedItem.ToString();
         }
 
         private void EditGroup(object sender, RoutedEventArgs e)
@@ -142,6 +122,37 @@
             _soundGroupMode = false;
             _particleMode = false;
 
+        }
+
+        private void BrowseForObject(string filter, out string relativePath, bool multiSelection = false)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = filter,
+                FilterIndex = 1,
+                Multiselect = multiSelection
+            };
+            relativePath = string.Empty;
+
+            if (openFileDialog.ShowDialog() != true)
+                return;
+
+            relativePath = openFileDialog.FileName;
+        }
+
+        private void SaveObject(string filter, out string relativePath)
+        {
+            var openFileDialog = new SaveFileDialog
+            {
+                Filter = filter,
+                FilterIndex = 1,
+            };
+            relativePath = string.Empty;
+
+            if (openFileDialog.ShowDialog() != true)
+                return;
+
+            relativePath = openFileDialog.FileName;
         }
 
         private void GetFirstGroup()
@@ -223,37 +234,22 @@
 
         private void BrowseForAnimation(object sender, RoutedEventArgs e)
         {
-            //// Create an instance of the open file dialog box.
-            //OpenFileDialog animationFile = new OpenFileDialog();
+            BrowseForObject("DAE Files (.dae)|*.dae", out string path);
 
-            //// Set filter options and filter index.
-            //animationFile.Filter = "DAE Files (.dae)|*.dae";
-            //animationFile.FilterIndex = 1;
+            Animation variant;
+            for (var i = variantListview.Items.Count - 1; i != -1; --i)
+            {
+                variant = (Animation)variantListview.Items[i];
+                if (variant != null && variant.IsChecked == true)
+                    variant.RelativePath = path;
+            }
 
-            //animationFile.Multiselect = false;
+            variant = (Animation)variantListview.SelectedItem;
 
-            //// Call the ShowDialog method to show the dialog box.
-            //bool? userClickedOK = animationFile.ShowDialog();
+            if (variant != null)
+                variant.RelativePath = path;
 
-            //// Process input if the user clicked OK.
-            //if (userClickedOK == true)
-            //{
-            //    Variant variant;
-            //    for (var i = variantListview.Items.Count - 1; i != -1; --i)
-            //    {
-            //        variant = (Variant)grouplistview.Items[i];
-            //        if (variant != null && variant.IsChecked == true)
-            //        {
-            //            variant.Mesh = animationFile.FileName;
-            //        }
-            //    }
-
-            //    variant = (Variant)variantListview.SelectedItem;
-            //    variant.Mesh = animationFile.FileName;
-            //}
-            //var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            //ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            //view.Refresh();
+            CollectionViewSource.GetDefaultView(_currentVariant.Animations).Refresh();
         }
 
 
@@ -287,37 +283,22 @@
 
         private void BrowseForProp(object sender, RoutedEventArgs e)
         {
-            //// Create an instance of the open file dialog box.
-            //OpenFileDialog animationFile = new OpenFileDialog();
+            BrowseForObject("XML Files (.xml)|*.xml", out string path);
 
-            //// Set filter options and filter index.
-            //animationFile.Filter = "DAE Files (.dae)|*.dae";
-            //animationFile.FilterIndex = 1;
+            Prop prop;
+            for (var i = propViewListView.Items.Count - 1; i != -1; --i)
+            {
+                prop = (Prop)propViewListView.Items[i];
+                if (prop != null && prop.IsChecked == true)
+                    prop.RelativePath = path;
+            }
 
-            //animationFile.Multiselect = false;
+            prop = (Prop)propViewListView.SelectedItem;
 
-            //// Call the ShowDialog method to show the dialog box.
-            //bool? userClickedOK = animationFile.ShowDialog();
+            if (prop != null)
+                prop.RelativePath = path;
 
-            //// Process input if the user clicked OK.
-            //if (userClickedOK == true)
-            //{
-            //    Variant variant;
-            //    for (var i = variantListview.Items.Count - 1; i != -1; --i)
-            //    {
-            //        variant = (Variant)grouplistview.Items[i];
-            //        if (variant != null && variant.IsChecked == true)
-            //        {
-            //            variant.Mesh = animationFile.FileName;
-            //        }
-            //    }
-
-            //    variant = (Variant)variantListview.SelectedItem;
-            //    variant.Mesh = animationFile.FileName;
-            //}
-            //var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            //ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            //view.Refresh();
+            CollectionViewSource.GetDefaultView(_currentVariant.Props).Refresh();
         }
 
         #endregion
@@ -351,10 +332,26 @@
 
         private void BrowseForTexture(object sender, RoutedEventArgs e)
         {
-            //All Files(*.*)| *.*
-            //All Files(*.dds)| *.dds
+            {
+                BrowseForObject("DDS Files(*.dds)| *.dds|PNG Files(*.png)| *.png", out string path);
+
+                Texture texture;
+                for (var i = textureViewListView.Items.Count - 1; i != -1; --i)
+                {
+                    texture = (Texture)textureViewListView.Items[i];
+                    if (texture != null && texture.IsChecked == true)
+                        texture.RelativePath = path;
+                }
+
+                texture = (Texture)textureViewListView.SelectedItem;
+
+                if (texture != null)
+                    texture.RelativePath = path;
+
+                CollectionViewSource.GetDefaultView(_currentVariant.Textures).Refresh();
+            }
         }
-        #endregion
+            #endregion
 
         #region Variant
         private void GoBackToGroupView(object sender, RoutedEventArgs e)
@@ -428,74 +425,43 @@
 
         private void BrowseForVariant(object sender, RoutedEventArgs e)
         {
-            // Create an instance of the open file dialog box.
-            OpenFileDialog variantFile = new OpenFileDialog();
+            BrowseForObject("XML Files (.xml)|*.xml", out string path);
 
-            // Set filter options and filter index.
-            variantFile.Filter = "XML Files (.xml)|*.xml";
-            variantFile.FilterIndex = 1;
-
-            variantFile.Multiselect = false;
-
-            // Call the ShowDialog method to show the dialog box.
-            bool? userClickedOK = variantFile.ShowDialog();
-
-            // Process input if the user clicked OK.
-            if (userClickedOK == true)
+            Variant variant;
+            for (var i = variantListview.Items.Count - 1; i != -1; --i)
             {
-                Variant variant;
-                for (var i = variantListview.Items.Count - 1; i != -1; --i)
-                {
-                    variant = (Variant)grouplistview.Items[i];
-                    if (variant != null && variant.IsChecked == true)
-                    {
-                        variant.ParentVariantRelativePath = variantFile.FileName;
-                    }
-                }
-
-                variant = (Variant)variantListview.SelectedItem;
-                if (variant == null)
-                    return;
-
-                variant.ParentVariantRelativePath = variantFile.FileName;
+                variant = (Variant)variantListview.Items[i];
+                if (variant != null && variant.IsChecked == true)
+                    variant.ParentVariantRelativePath = path;
             }
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
+
+            variant = (Variant)variantListview.SelectedItem;
+
+            if (variant != null)
+                variant.ParentVariantRelativePath = path;
+
+            CollectionViewSource.GetDefaultView(_currentGroup).Refresh();
         }
 
         private void BrowseForMesh(object sender, RoutedEventArgs e)
         {
 
-            // Create an instance of the open file dialog box.
-            OpenFileDialog meshFile = new OpenFileDialog
+            BrowseForObject("DAE Files (.dae)|*.dae", out string path);
+
+            Variant variant;
+            for (var i = variantListview.Items.Count - 1; i != -1; --i)
             {
-                // Set filter options and filter index.
-                Filter = "DAE Files (.dae)|*.dae",
-                FilterIndex = 1,
-
-                Multiselect = false
-            };
-
-            // Call the ShowDialog method to show the dialog box.
-            bool? userClickedOK = meshFile.ShowDialog();
-
-            // Process input if the user clicked OK.
-            if (userClickedOK == true)
-            {
-                for (var i = 0; i != variantListview.Items.Count; ++i)
-                {
-                    var variant = (Variant)grouplistview.Items[i];
-                    if (variant != null && variant.IsChecked == true)
-                        variant.Mesh = meshFile.FileName;
-                }
-
-                // _currentVariant.Mesh = meshFile.FileName;
+                variant = (Variant)variantListview.Items[i];
+                if (variant != null && variant.IsChecked == true)
+                    variant.Mesh = path;
             }
 
-            var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
+            variant = (Variant)variantListview.SelectedItem;
+
+            if (variant != null)
+                variant.Mesh = path;
+
+            CollectionViewSource.GetDefaultView(_currentGroup).Refresh();
         }
 
         private void GoBackToVariantView(object sender, RoutedEventArgs e)
@@ -518,8 +484,11 @@
             {
                 new Variant()
             };
-            SaveButton.IsEnabled = true;
-            SaveMenu.IsEnabled = true;
+            SaveAsMenu.IsEnabled = true;
+            SaveAsButton.IsEnabled = true;
+            SaveButton.IsEnabled = false;
+            SaveMenu.IsEnabled = false;
+            _currentFilePath = string.Empty;
             GoBackButton.Visibility = Visibility.Collapsed;
             AddVariantButton.Visibility = Visibility.Collapsed;
             DeleteVariantButton.Visibility = Visibility.Collapsed;
@@ -539,8 +508,11 @@
             castsShadows.IsEnabled = true;
             castsShadows.IsChecked = _actor.CastsShadows;
             floats.IsChecked = _actor.Floats;
-            SaveButton.IsEnabled = true;
-            SaveMenu.IsEnabled = true;
+            _currentFilePath = string.Empty;
+            SaveAsButton.IsEnabled = true;
+            SaveAsMenu.IsEnabled = true;
+            SaveButton.IsEnabled = false;
+            SaveMenu.IsEnabled = false;
             actorOptions.Visibility = Visibility.Visible;
             groupview.Visibility = Visibility.Visible;
             logoBox.Visibility = Visibility.Collapsed;
@@ -548,96 +520,16 @@
             DeleteVariantButton.Visibility = Visibility.Visible;
             AddVariantButton.Visibility = Visibility.Visible;
             GoBackButton.Visibility = Visibility.Visible;
-            Materials.ItemsSource = FileHandler.GetMaterialList();
             this.DataContext = _actor.Groups;
-        }
-
-        private void OpenVariant(object sender, RoutedEventArgs e)
-        {
-            SetVariantMode();
-
-
-            // Create an instance of the open file dialog box.
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-
-            // Set filter options and filter index.
-            openFileDialog1.Filter = "XML Files (.xml)|*.xml";
-            openFileDialog1.FilterIndex = 1;
-
-            openFileDialog1.Multiselect = true;
-
-            // Call the ShowDialog method to show the dialog box.
-            bool? userClickedOK = openFileDialog1.ShowDialog();
-
-            // Process input if the user clicked OK.
-            if (userClickedOK == true)
-            {
-                var variant = FileHandler.OpenVariantFile(openFileDialog1.FileName);
-                if (variant == null)
-                {
-                    MessageBoxResult result = MessageBox.Show("Error: Parsed file is either malformed or not a variant file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        Application.Current.Shutdown();
-                    }
-                    return;
-                }
-                _currentGroup = new Group
-                {
-                    variant
-                };
-
-                GoBackButton.Visibility = Visibility.Collapsed;
-                SaveButton.IsEnabled = true;
-                SaveMenu.IsEnabled = true;
-                AddVariantButton.Visibility = Visibility.Collapsed;
-                DeleteVariantButton.Visibility = Visibility.Collapsed;
-                groupview.Visibility = Visibility.Collapsed;
-                logoBox.Visibility = Visibility.Collapsed;
-                variantview.Visibility = Visibility.Visible;
-                this.DataContext = _currentGroup;
-            }
-        }
-
-        private void SaveAs(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
-        {
-
+            Materials.SelectedIndex = 0;
         }
 
         private void OpenActor(object sender, RoutedEventArgs e)
         {
             SetActorMode();
-            // Create an instance of the open file dialog box.
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-
-            // Set filter options and filter index.
-            openFileDialog1.Filter = "XML Files (.xml)|*.xml";
-            openFileDialog1.FilterIndex = 1;
-
-            openFileDialog1.Multiselect = true;
-
-            // Call the ShowDialog method to show the dialog box.
-            bool? userClickedOK = openFileDialog1.ShowDialog();
-
-            // Process input if the user clicked OK.
-            if (userClickedOK == true)
+            BrowseForObject("XML Files (.xml)|*.xml", out string path);
             {
-                _actor = FileHandler.OpenActorFile(openFileDialog1.FileName);
+                _actor = FileHandler.OpenActorFile(path);
 
                 if (_actor == null)
                 {
@@ -660,8 +552,10 @@
                         break;
                     ++index;
                 }
+                SaveAsButton.IsEnabled = true;
                 SaveButton.IsEnabled = true;
                 SaveMenu.IsEnabled = true;
+                SaveAsMenu.IsEnabled = true;
                 Materials.SelectedIndex = index;
                 floats.IsChecked = _actor.Floats;
                 actorOptions.Visibility = Visibility.Visible;
@@ -674,6 +568,91 @@
                 this.DataContext = _actor.Groups;
             }
         }
+
+
+        private void OpenVariant(object sender, RoutedEventArgs e)
+        {
+            SetVariantMode();
+            BrowseForObject("XML Files (.xml)|*.xml", out string path);
+           
+            var variant = FileHandler.OpenVariantFile(path);
+            if (variant == null)
+            {
+                MessageBoxResult result = MessageBox.Show("Error: Parsed file is either malformed or not a variant file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Application.Current.Shutdown();
+                }
+                return;
+            }
+            _currentGroup = new Group
+            {
+                variant
+            };
+
+            GoBackButton.Visibility = Visibility.Collapsed;
+            SaveAsButton.IsEnabled = true;
+            SaveAsMenu.IsEnabled = true;
+            SaveButton.IsEnabled = true;
+            SaveMenu.IsEnabled = true;
+            AddVariantButton.Visibility = Visibility.Collapsed;
+            DeleteVariantButton.Visibility = Visibility.Collapsed;
+            groupview.Visibility = Visibility.Collapsed;
+            logoBox.Visibility = Visibility.Collapsed;
+            variantview.Visibility = Visibility.Visible;
+            this.DataContext = _currentGroup;
+            
+        }
+
+        private void SaveAs(object sender, RoutedEventArgs e)
+        {
+            SaveObject("XML Files (.xml)|*.xml", out string relativePath);
+            SaveHandler(relativePath);
+        }
+
+        private void SaveHandler(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            SaveButton.IsEnabled = true;
+            SaveMenu.IsEnabled = true;
+            _currentFilePath = path;
+            if (_actor != null && _actorMode)
+                FileHandler.SaveFile(_actor, path);
+            else if (_currentGroup != null && _currentGroup.Count > 0 && _variantMode)
+                FileHandler.SaveFile(_currentGroup.FirstOrDefault(), path);
+        }
+
+        private void Save(object sender, RoutedEventArgs e)
+        {
+            SaveHandler(_currentFilePath);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Click_6(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void MenuPopupButton_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
 
         private void UIElement_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -688,18 +667,6 @@
             MenuToggleButton.IsChecked = false;
         }
 
-        private async void MenuPopupButton_OnClick(object sender, RoutedEventArgs e)
-        {
-        }
-
-        private void Save(object sender, RoutedEventArgs e)
-        {
-            if (_actor != null && _actorMode)
-                FileHandler.SaveFile(_actor);
-            else if (_currentGroup != null && _currentGroup.Count > 0 && _variantMode)
-                FileHandler.SaveFile(_currentGroup.FirstOrDefault());
-        }
-
         private void Exit(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Do you want to close this window?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -710,15 +677,5 @@
         }
 
         #endregion
-
-        private void variantListview_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void variantListview_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }
