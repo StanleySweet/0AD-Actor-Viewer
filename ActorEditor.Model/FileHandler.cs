@@ -12,7 +12,6 @@ namespace ActorEditor.Model
 {
     public class FileHandler
     {
-
         public static Actor OpenActorFile(string filePath)
         {
             Actor actor;
@@ -61,12 +60,20 @@ namespace ActorEditor.Model
         /// Returns the list of materials
         /// </summary>
         /// <returns></returns>
-        public static List<string> GetMaterialList()
-        {
-            string path = @"G:\materials\";
-            var pathList = Directory.GetFiles(path).ToList();
-            for (int i = 0; i != pathList.Count;++i)
-                pathList[i] = pathList[i].Replace(path, "");
+        public static string[] GetMaterialList(string path)
+        {          
+            string[] pathList = null;
+            try
+            {
+                pathList = Directory.GetFiles(path);
+                for (int i = 0; i != pathList.Length; ++i)
+                    pathList[i] = pathList[i].Replace(path, "");
+            }
+            catch (Exception)
+            {
+
+                Debug.WriteLine("Can't find the material Folder");
+            }
 
             return pathList;
         }
@@ -75,10 +82,11 @@ namespace ActorEditor.Model
         /// Saves the actor file
         /// </summary>
         /// <param name="actor"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        public static bool SaveFile(Actor actor)
+        public static bool SaveFile(Actor actor, string path)
         {
-            using (var file = new StreamWriter(@"G:\test.xml"))
+            using (var file = new StreamWriter(path))
             {
                 XmlWriterSettings settings = new XmlWriterSettings
                 {
@@ -104,10 +112,11 @@ namespace ActorEditor.Model
         /// Saves the file
         /// </summary>
         /// <param name="variant"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        public static bool SaveFile(Variant variant)
+        public static bool SaveFile(Variant variant, string path)
         {
-            using (var file = new StreamWriter(@"G:\test.xml"))
+            using (var file = new StreamWriter(path))
             {
                 XmlWriterSettings settings = new XmlWriterSettings
                 {
