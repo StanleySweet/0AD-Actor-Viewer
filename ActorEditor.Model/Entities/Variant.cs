@@ -35,7 +35,7 @@ namespace ActorEditor.Model
 
         public Variant(XDocument variantFile)
         {
-            DeserializeElements(variantFile.Elements().FirstOrDefault(a => a.Name == "variant"));
+            DeserializeElements(variantFile.Elements().FirstOrDefault(a => a.Name == Constants.VARIANT_ROOT_TAG_NAME));
         }
 
         public Variant(XElement variant)
@@ -48,7 +48,7 @@ namespace ActorEditor.Model
 
         public XElement SerializeElements()
         {
-            var curVariant = new XElement("variant");
+            var curVariant = new XElement(Constants.VARIANT_ROOT_TAG_NAME);
             if (!string.IsNullOrEmpty(this.ParentVariantRelativePath))
                 curVariant.Add(new XAttribute("file", this.ParentVariantRelativePath));
             if (this.Frequency > 0)
@@ -90,7 +90,7 @@ namespace ActorEditor.Model
 
         public void DeserializeElements(XElement element)
         {
-            if (!element.Name.LocalName.Equals("variant"))
+            if (!element.Name.LocalName.Equals(Constants.VARIANT_ROOT_TAG_NAME))
                 throw new System.TypeLoadException();
             this.Name = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
             this.ParentVariantRelativePath = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
