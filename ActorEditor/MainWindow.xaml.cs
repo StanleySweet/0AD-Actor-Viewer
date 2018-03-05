@@ -597,13 +597,6 @@
                     }
                     return;
                 }
-
-                modLabel.Text = _modJsonFile.label;
-                modName.Text = _modJsonFile.name;
-                modUrl.Text = _modJsonFile.url;
-                modVersion.Text = _modJsonFile.version;
-                modDescription.Text = _modJsonFile.description;
-
                 SaveAsButton.IsEnabled = true;
                 SaveButton.IsEnabled = true;
                 SaveMenu.IsEnabled = true;
@@ -803,6 +796,25 @@
             GoBackButton.Visibility = Visibility.Collapsed;
             ModJsonView.Visibility = Visibility.Visible;
             this.DataContext = _modJsonFile;
+        }
+
+        /// <summary>
+        /// Allow to add dependencies
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddDependency(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Allows to remove dependencies
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RemoveDependency(object sender, RoutedEventArgs e)
+        {
         }
     }
 }

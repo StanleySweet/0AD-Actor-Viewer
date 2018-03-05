@@ -37,7 +37,7 @@ namespace ActorEditor.Model.Entities.Mod
         /// A list of strings containing all the dependencies
         /// Example: ["0ad=0.0.23"]
         /// </summary>
-        public string[] dependencies { get; set; }
+        public List<string> dependencies { get; set; }
 
         /// <summary>
         /// Default Constructor

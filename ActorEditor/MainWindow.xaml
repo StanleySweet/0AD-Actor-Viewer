@@ -474,23 +474,17 @@
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Description:</TextBlock>
                                                 <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modDescription" Text="{Binding Path=description}"/>
                                             </WrapPanel>
-                                            <WrapPanel VerticalAlignment="Center">
+                                            <WrapPanel VerticalAlignment="Center"  Margin="0 20 0 0">
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Dependencies:</TextBlock>
-                                                <ListView Name="modJsonViewListView" Width="590" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True" ItemsSource="{Binding}" AlternationCount="2">
-                                                <ListView.View>
-                                                    <GridView>
-                                                        <GridView.Columns>
-                                                            <GridViewColumn Width="40" Header="Select">
-                                                                <GridViewColumn.CellTemplate>
-                                                                    <DataTemplate>
-                                                                        <TextBox Text="{Binding Path=dependencies}" />
-                                                                    </DataTemplate>
-                                                                </GridViewColumn.CellTemplate>
-                                                            </GridViewColumn>
-                                                        </GridView.Columns>
-                                                    </GridView>
-                                                </ListView.View>
-                                            </ListView>
+                                                <ListView Name="modJsonViewListView" Width="590" Height="130" VerticalAlignment="Center" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True" ItemsSource="{Binding Path=dependencies}"/>
+                                            </WrapPanel>
+                                            <WrapPanel HorizontalAlignment="Right" Visibility="Collapsed">
+                                                <Button Height="30" Width="30" Style="{StaticResource MaterialDesignFloatingActionButton}" Click="AddDependency" Margin="0 10 25 0" ToolTip="Add Dependency">
+                                                    <Path Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" Stretch="Uniform" Width="15" Height="15" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
+                                                </Button>
+                                                <Button Height="30" Width="30" Style="{StaticResource MaterialDesignFloatingActionButton}" Click="RemoveDependency" ToolTip="Remove Dependency" Margin="0 10 25 0">
+                                                    <Path Data="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" Stretch="Uniform" Width="15" Height="15" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
+                                                </Button>
                                             </WrapPanel>
                                         </StackPanel>
                                     </StackPanel>
