@@ -41,7 +41,7 @@
             _rootPath = ConfigurationManager.AppSettings["material_path"];
             var truncateIndex = _rootPath.IndexOf("\\materials\\");
             if (truncateIndex > 0)
-                _rootPath = _rootPath.Substring(0, truncateIndex);      
+                _rootPath = _rootPath.Substring(0, truncateIndex);
             Materials.ItemsSource = FileHandler.GetMaterialList(ConfigurationManager.AppSettings["material_path"]);
         }
 
@@ -135,7 +135,7 @@
 
         private void SetModJsonMode()
         {
-            _variantMode = true;
+            _variantMode = false;
             _actorMode = false;
             _particleMode = false;
             _soundGroupMode = false;
@@ -374,7 +374,7 @@
             if (WasCancelled == true)
                 return;
 
-            var truncateIndex = path.IndexOf("\\art\\textures\\skins\\") ;
+            var truncateIndex = path.IndexOf("\\art\\textures\\skins\\");
             if (truncateIndex > 0)
                 path = path.Substring(truncateIndex + "\\art\\textures\\skins\\".Length);
 
@@ -598,23 +598,16 @@
                     return;
                 }
 
-                floats.IsEnabled = true;
-                castsShadows.IsEnabled = true;
-                castsShadows.IsChecked = _actor.CastsShadows;
+                modLabel.Text = _modJsonFile.label;
+                modName.Text = _modJsonFile.name;
+                modUrl.Text = _modJsonFile.url;
+                modVersion.Text = _modJsonFile.version;
+                modDescription.Text = _modJsonFile.description;
 
-                var index = 0;
-                foreach (var item in Materials.Items)
-                {
-                    if (item.ToString().Equals(_actor.Material))
-                        break;
-                    ++index;
-                }
                 SaveAsButton.IsEnabled = true;
                 SaveButton.IsEnabled = true;
                 SaveMenu.IsEnabled = true;
                 SaveAsMenu.IsEnabled = true;
-                Materials.SelectedIndex = index;
-                floats.IsChecked = _actor.Floats;
                 actorOptions.Visibility = Visibility.Collapsed;
                 groupview.Visibility = Visibility.Collapsed;
                 variantview.Visibility = Visibility.Collapsed;
@@ -671,6 +664,7 @@
                 DeleteVariantButton.Visibility = Visibility.Visible;
                 AddVariantButton.Visibility = Visibility.Visible;
                 GoBackButton.Visibility = Visibility.Visible;
+                ModJsonView.Visibility = Visibility.Collapsed;
                 this.DataContext = _actor.Groups;
             }
         }
@@ -682,7 +676,7 @@
             BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
-            
+
             var variant = FileHandler.Open0adXmlFile<Variant>(path);
             if (variant == null)
             {
@@ -714,7 +708,16 @@
 
         private void SaveAs(object sender, RoutedEventArgs e)
         {
-            SaveObject("XML Files (.xml)|*.xml", out string relativePath);
+            string relativePath = string.Empty;
+            if(_modJsonFile != null && _modJsonMode)
+            {
+                SaveObject("Json Files (.json)|*.json", out relativePath);
+            }
+            else
+            {
+                SaveObject("XML Files (.xml)|*.xml", out relativePath);
+            }
+
             SaveHandler(relativePath);
         }
 
@@ -730,6 +733,8 @@
                 FileHandler.SaveFile(_actor, path);
             else if (_currentGroup != null && _currentGroup.Count > 0 && _variantMode)
                 FileHandler.SaveFile(_currentGroup.FirstOrDefault(), path);
+            else if(_modJsonFile != null && _modJsonMode)
+                FileHandler.SaveFile(_modJsonFile, path);
         }
 
         private void Save(object sender, RoutedEventArgs e)
@@ -780,5 +785,24 @@
         }
 
         #endregion
+
+        private void CreateModFile(object sender, RoutedEventArgs e)
+        {
+            SetModJsonMode();
+            _modJsonFile = new ModJsonFile();
+            SaveAsButton.IsEnabled = true;
+            SaveButton.IsEnabled = false;
+            SaveMenu.IsEnabled = false;
+            SaveAsMenu.IsEnabled = true;
+            actorOptions.Visibility = Visibility.Collapsed;
+            groupview.Visibility = Visibility.Collapsed;
+            variantview.Visibility = Visibility.Collapsed;
+            logoBox.Visibility = Visibility.Collapsed;
+            DeleteVariantButton.Visibility = Visibility.Collapsed;
+            AddVariantButton.Visibility = Visibility.Collapsed;
+            GoBackButton.Visibility = Visibility.Collapsed;
+            ModJsonView.Visibility = Visibility.Visible;
+            this.DataContext = _modJsonFile;
+        }
     }
 }

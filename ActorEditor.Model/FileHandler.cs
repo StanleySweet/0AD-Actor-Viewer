@@ -77,7 +77,7 @@ namespace ActorEditor.Model
         /// </summary>
         /// <returns></returns>
         public static string[] GetMaterialList(string path)
-        {          
+        {
             string[] pathList = null;
             try
             {
@@ -93,6 +93,22 @@ namespace ActorEditor.Model
 
             return pathList;
         }
+
+        /// <summary>
+        /// Saves the actor file
+        /// </summary>
+        /// <param name="modJsonFile"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static bool SaveFile(ModJsonFile modJsonFile, string path)
+        {
+            File.WriteAllText(@"" + path, JsonConvert.SerializeObject(modJsonFile, 
+                Newtonsoft.Json.Formatting.Indented, 
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
+            ));
+            return true;
+        }
+
 
         /// <summary>
         /// Saves the actor file

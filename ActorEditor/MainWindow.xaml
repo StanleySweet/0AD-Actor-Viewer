@@ -91,12 +91,14 @@
                             </Menu.ItemsPanel>
                             <MenuItem Header="_New">
                                 <MenuItem Header="_Actor" Click="CreateActor"/>
+                                <MenuItem Header="_Mod.json" Click="CreateModFile"/>
                                 <MenuItem IsEnabled="False" Header="_Particle" Click="MenuItem_Click_6"/>
                                 <MenuItem IsEnabled="False" Header="_Soundgroup" Click="MenuItem_Click_6"/>
                                 <MenuItem Header="_Variant" Click="CreateVariant"/>
                             </MenuItem>
                             <MenuItem Header="_Open">
                                 <MenuItem Header="_Actor" Click="OpenActor"/>
+                                <MenuItem Header="_Mod.json" Click="OpenModFile"/>
                                 <MenuItem IsEnabled="False" Header="_Particle" Click="MenuItem_Click"/>
                                 <MenuItem IsEnabled="False" Header="_Soundgroup" Click="MenuItem_Click_1"/>
                                 <MenuItem Header="_Variant" Click="OpenVariant"/>
@@ -454,27 +456,41 @@
                                         <StackPanel>
                                             <WrapPanel>
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Label:</TextBlock>
-                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modLabel">0 A.D. - Empires Ascendant</TextBox>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modLabel" Text="{Binding Path=label}"/>
                                             </WrapPanel>
                                             <WrapPanel>
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Name: </TextBlock>
-                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modName">my_mod_name</TextBox>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center"  Name="modName" Text="{Binding Path=name}"/>
                                             </WrapPanel>
                                             <WrapPanel VerticalAlignment="Center">
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Version:</TextBlock>
-                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modVersion">0.0.23</TextBox>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modVersion" Text="{Binding Path=version}"/>
                                             </WrapPanel>
                                             <WrapPanel VerticalAlignment="Center">
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod URL:</TextBlock>
-                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modUrl">http://wildfiregames.com/</TextBox>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modUrl" Text="{Binding Path=url}"/>
                                             </WrapPanel>
                                             <WrapPanel VerticalAlignment="Center">
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Description:</TextBlock>
-                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modDescription">A free, open-source, historical RTS game.</TextBox>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modDescription" Text="{Binding Path=description}"/>
                                             </WrapPanel>
                                             <WrapPanel VerticalAlignment="Center">
                                                 <TextBlock Width="150" VerticalAlignment="Center">Mod Dependencies:</TextBlock>
-                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modDependencies"></TextBox>
+                                                <ListView Name="modJsonViewListView" Width="590" Height="200" VerticalAlignment="Center" HorizontalAlignment="Center" ScrollViewer.CanContentScroll="True" ItemsSource="{Binding}" AlternationCount="2">
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridView.Columns>
+                                                            <GridViewColumn Width="40" Header="Select">
+                                                                <GridViewColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBox Text="{Binding Path=dependencies}" />
+                                                                    </DataTemplate>
+                                                                </GridViewColumn.CellTemplate>
+                                                            </GridViewColumn>
+                                                        </GridView.Columns>
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
                                             </WrapPanel>
                                         </StackPanel>
                                     </StackPanel>
