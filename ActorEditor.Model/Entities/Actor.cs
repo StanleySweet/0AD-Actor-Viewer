@@ -48,11 +48,11 @@ namespace ActorEditor.Model
             this._floats = element.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;
             this._material = element.Elements().FirstOrDefault(a => a.Name.LocalName == "material")?.Value;
 
-            var xElementGroups = element.Elements().Where(a => a.Name.LocalName == "group");
+            var xElementGroups = element.Elements().Where(a => a.Name.LocalName == Constants.GROUP_ROOT_TAG_NAME);
             foreach (var xElementGroup in xElementGroups)
             {
                 var group = new Group();
-                var xElementVariants = xElementGroup.Elements().Where(a => a.Name.LocalName == "variant");
+                var xElementVariants = xElementGroup.Elements().Where(a => a.Name.LocalName == Constants.VARIANT_ROOT_TAG_NAME);
                 foreach (var xElementVariant in xElementVariants)
                     group.Add(new Variant(xElementVariant));
 

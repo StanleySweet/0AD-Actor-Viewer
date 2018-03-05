@@ -11,7 +11,7 @@ namespace ActorEditor.Model.Entities
 
         public XElement SerializeElements()
         {
-            var curGroup = new XElement("group");
+            var curGroup = new XElement(Constants.GROUP_ROOT_TAG_NAME);
             foreach (var variant in this)
             {
                 curGroup.Add(variant.SerializeElements());
@@ -21,7 +21,7 @@ namespace ActorEditor.Model.Entities
 
         public override string ToString()
         {
-            return "Group";
+            return Constants.GROUP_ROOT_TAG_NAME;
         }
     }
 }
