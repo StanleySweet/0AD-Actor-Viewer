@@ -78,7 +78,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <materialDesign:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
+        <materialDesign:DialogHost>
             <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
                 <materialDesign:DrawerHost.LeftDrawerContent>
                     <DockPanel MinWidth="212">
@@ -126,7 +126,7 @@
                         </DockPanel>
                     </materialDesign:ColorZone>
                     <Grid>
-                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.HorizontalScrollBarVisibilityRequirement}" VerticalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.VerticalScrollBarVisibilityRequirement}" Padding="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.MarginRequirement}">
+                        <ScrollViewer Grid.Row="1">
                             <ContentControl>
                                 <StackPanel Margin="8">
                                     <WrapPanel Visibility="Collapsed" Name="actorOptions" Margin="25 25 0 0">
@@ -146,7 +146,7 @@
                                                         <GridViewColumn Header="Select">
                                                             <GridViewColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <CheckBox Tag="{Binding ID}" IsChecked="{Binding Path=IsChecked}" />
+                                                                    <CheckBox IsChecked="{Binding Path=IsChecked}" />
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
@@ -379,7 +379,7 @@
                                                         <GridViewColumn Header="Is Selectable">
                                                             <GridViewColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <CheckBox Tag="{Binding ID}" IsChecked="{Binding Path=IsSelectable}" />
+                                                                    <CheckBox IsChecked="{Binding Path=IsSelectable}" />
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
@@ -415,7 +415,7 @@
                                                         <GridViewColumn Width="40" Header="Select">
                                                             <GridViewColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <CheckBox Tag="{Binding ID}" IsChecked="{Binding Path=IsChecked}" />
+                                                                    <CheckBox IsChecked="{Binding Path=IsChecked}" />
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
@@ -449,6 +449,34 @@
                                                 <Path Data="M20,11H7.83l5.59-5.59L12,4l-8,8,8,8,1.41-1.41L7.83,13H20v-2z" Stretch="Uniform" Width="15" Height="15" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"/>
                                             </Button>
                                         </WrapPanel>
+                                    </StackPanel>
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Name="ModJsonView" Visibility="Collapsed">
+                                        <StackPanel>
+                                            <WrapPanel>
+                                                <TextBlock Width="150" VerticalAlignment="Center">Mod Label:</TextBlock>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modLabel">0 A.D. - Empires Ascendant</TextBox>
+                                            </WrapPanel>
+                                            <WrapPanel>
+                                                <TextBlock Width="150" VerticalAlignment="Center">Mod Name: </TextBlock>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modName">my_mod_name</TextBox>
+                                            </WrapPanel>
+                                            <WrapPanel VerticalAlignment="Center">
+                                                <TextBlock Width="150" VerticalAlignment="Center">Mod Version:</TextBlock>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modVersion">0.0.23</TextBox>
+                                            </WrapPanel>
+                                            <WrapPanel VerticalAlignment="Center">
+                                                <TextBlock Width="150" VerticalAlignment="Center">Mod URL:</TextBlock>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modUrl">http://wildfiregames.com/</TextBox>
+                                            </WrapPanel>
+                                            <WrapPanel VerticalAlignment="Center">
+                                                <TextBlock Width="150" VerticalAlignment="Center">Mod Description:</TextBlock>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modDescription">A free, open-source, historical RTS game.</TextBox>
+                                            </WrapPanel>
+                                            <WrapPanel VerticalAlignment="Center">
+                                                <TextBlock Width="150" VerticalAlignment="Center">Mod Dependencies:</TextBlock>
+                                                <TextBox Width="150" Margin="5 0 0 0" VerticalAlignment="Center" Name="modDependencies"></TextBox>
+                                            </WrapPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </ContentControl>
