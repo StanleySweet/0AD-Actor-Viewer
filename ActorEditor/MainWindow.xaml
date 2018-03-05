@@ -310,7 +310,7 @@
                                                         <GridViewColumn Header="Relative path">
                                                             <GridViewColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <TextBox Text="{Binding Path=RelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
+                                                                    <TextBox MouseDoubleClick="BrowseForAnimation" Text="{Binding Path=RelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
@@ -361,7 +361,7 @@
                                                         <GridViewColumn Header="Relative Path" Width="150">
                                                             <GridViewColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <TextBox Text="{Binding Path=RelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
+                                                                    <TextBox MouseDoubleClick="BrowseForProp" Text="{Binding Path=RelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
@@ -432,7 +432,7 @@
                                                         <GridViewColumn Header="Relative Path" Width="150">
                                                             <GridViewColumn.CellTemplate>
                                                                 <DataTemplate>
-                                                                    <TextBox Text="{Binding Path=RelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
+                                                                    <TextBox MouseDoubleClick="BrowseForTexture" Text="{Binding Path=RelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
