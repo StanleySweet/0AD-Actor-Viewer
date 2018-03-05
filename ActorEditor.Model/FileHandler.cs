@@ -102,8 +102,8 @@ namespace ActorEditor.Model
         /// <returns></returns>
         public static bool SaveFile(ModJsonFile modJsonFile, string path)
         {
-            File.WriteAllText(@"" + path, JsonConvert.SerializeObject(modJsonFile, 
-                Newtonsoft.Json.Formatting.Indented, 
+            File.WriteAllText(@"" + path, JsonConvert.SerializeObject(modJsonFile,
+                Newtonsoft.Json.Formatting.Indented,
                 new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
             ));
             return true;
@@ -136,6 +136,10 @@ namespace ActorEditor.Model
                     document.Add(actor.SerializeElements());
                     document.WriteTo(writer);
                     writer.Close();
+                }
+                using (StreamWriter writer = new StreamWriter(path, true))
+                {
+                    writer.Write("\r\n");
                 }
             }
             return true;
