@@ -23,6 +23,8 @@
         private bool _actorMode;
         private bool _particleMode;
         private bool _soundGroupMode;
+        private bool _modJsonMode;
+        private string _rootPath;
         private string _currentFilePath;
         private bool _variantMode;
         private bool _IsInDarkMode;
@@ -34,6 +36,10 @@
         public MainWindow()
         {
             InitializeComponent();
+            _rootPath = ConfigurationManager.AppSettings["material_path"];
+            var truncateIndex = _rootPath.IndexOf("\\materials\\");
+            if (truncateIndex > 0)
+                _rootPath = _rootPath.Substring(0, truncateIndex);
             Materials.ItemsSource = FileHandler.GetMaterialList(ConfigurationManager.AppSettings["material_path"]);
         }
 
@@ -112,6 +118,7 @@
             _variantMode = false;
             _soundGroupMode = false;
             _particleMode = false;
+            _modJsonMode = false;
         }
 
         private void SetVariantMode()
@@ -121,10 +128,11 @@
             _particleMode = false;
             _soundGroupMode = false;
             _particleMode = false;
+            _modJsonMode = false;
 
         }
 
-        private void BrowseForObject(string filter, out string relativePath, bool multiSelection = false)
+        private void BrowseForObject(string filter, out string relativePath, string initialDirectory = "", bool multiSelection = false)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -132,6 +140,10 @@
                 FilterIndex = 1,
                 Multiselect = multiSelection
             };
+
+            if (!string.IsNullOrEmpty(initialDirectory))
+                openFileDialog.InitialDirectory = initialDirectory;
+
             relativePath = string.Empty;
 
             if (openFileDialog.ShowDialog() != true)
@@ -235,6 +247,9 @@
         private void BrowseForAnimation(object sender, RoutedEventArgs e)
         {
             BrowseForObject("DAE Files (.dae)|*.dae", out string path);
+            var truncateIndex = path.IndexOf("\\art\\animations\\");
+            if (truncateIndex > 0)
+                path = path.Substring(truncateIndex + "\\art\\animations\\".Length);
 
             Animation variant;
             for (var i = variantListview.Items.Count - 1; i != -1; --i)
@@ -284,6 +299,9 @@
         private void BrowseForProp(object sender, RoutedEventArgs e)
         {
             BrowseForObject("XML Files (.xml)|*.xml", out string path);
+            var truncateIndex = path.IndexOf("\\art\\actors\\props\\");
+            if (truncateIndex > 0)
+                path = path.Substring(truncateIndex + "\\art\\actors\\props\\".Length);
 
             Prop prop;
             for (var i = propViewListView.Items.Count - 1; i != -1; --i)
@@ -332,26 +350,28 @@
 
         private void BrowseForTexture(object sender, RoutedEventArgs e)
         {
+            BrowseForObject("DDS Files(*.dds)| *.dds|PNG Files(*.png)| *.png", out string path);
+            var truncateIndex = path.IndexOf("\\art\\textures\\skins\\") ;
+            if (truncateIndex > 0)
+                path = path.Substring(truncateIndex + "\\art\\textures\\skins\\".Length);
+
+            Texture texture;
+            for (var i = textureViewListView.Items.Count - 1; i != -1; --i)
             {
-                BrowseForObject("DDS Files(*.dds)| *.dds|PNG Files(*.png)| *.png", out string path);
-
-                Texture texture;
-                for (var i = textureViewListView.Items.Count - 1; i != -1; --i)
-                {
-                    texture = (Texture)textureViewListView.Items[i];
-                    if (texture != null && texture.IsChecked == true)
-                        texture.RelativePath = path;
-                }
-
-                texture = (Texture)textureViewListView.SelectedItem;
-
-                if (texture != null)
+                texture = (Texture)textureViewListView.Items[i];
+                if (texture != null && texture.IsChecked == true)
                     texture.RelativePath = path;
-
-                CollectionViewSource.GetDefaultView(_currentVariant.Textures).Refresh();
             }
+
+            texture = (Texture)textureViewListView.SelectedItem;
+
+            if (texture != null)
+                texture.RelativePath = path;
+
+            CollectionViewSource.GetDefaultView(_currentVariant.Textures).Refresh();
+
         }
-            #endregion
+        #endregion
 
         #region Variant
         private void GoBackToGroupView(object sender, RoutedEventArgs e)
@@ -426,6 +446,9 @@
         private void BrowseForVariant(object sender, RoutedEventArgs e)
         {
             BrowseForObject("XML Files (.xml)|*.xml", out string path);
+            var truncateIndex = path.IndexOf("\\art\\variants\\");
+            if (truncateIndex > 0)
+                path = path.Substring(truncateIndex + "\\art\\variants\\".Length);
 
             Variant variant;
             for (var i = variantListview.Items.Count - 1; i != -1; --i)
@@ -447,6 +470,10 @@
         {
 
             BrowseForObject("DAE Files (.dae)|*.dae", out string path);
+            var truncateIndex = path.IndexOf("\\art\\meshes\\");
+            if (truncateIndex > 0)
+                path = path.Substring(truncateIndex + "\\art\\meshes\\".Length);
+
 
             Variant variant;
             for (var i = variantListview.Items.Count - 1; i != -1; --i)
@@ -528,8 +555,9 @@
         {
             SetActorMode();
             BrowseForObject("XML Files (.xml)|*.xml", out string path);
+
             {
-                _actor = FileHandler.OpenActorFile(path);
+                _actor = FileHandler.Open0adXmlFile<Actor>(path);
 
                 if (_actor == null)
                 {
@@ -574,8 +602,8 @@
         {
             SetVariantMode();
             BrowseForObject("XML Files (.xml)|*.xml", out string path);
-           
-            var variant = FileHandler.OpenVariantFile(path);
+
+            var variant = FileHandler.Open0adXmlFile<Variant>(path);
             if (variant == null)
             {
                 MessageBoxResult result = MessageBox.Show("Error: Parsed file is either malformed or not a variant file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -601,7 +629,7 @@
             logoBox.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
             this.DataContext = _currentGroup;
-            
+
         }
 
         private void SaveAs(object sender, RoutedEventArgs e)
@@ -648,11 +676,6 @@
         {
 
         }
-
-        private async void MenuPopupButton_OnClick(object sender, RoutedEventArgs e)
-        {
-        }
-
 
         private void UIElement_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
