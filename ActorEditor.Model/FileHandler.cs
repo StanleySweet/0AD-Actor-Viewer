@@ -1,4 +1,7 @@
-﻿using ActorEditor.Model.External;
+﻿using ActorEditor.Model.Entities.Mod;
+using ActorEditor.Model.External;
+using ActorEditor.Model.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,50 +13,65 @@ using System.Xml.Linq;
 
 namespace ActorEditor.Model
 {
+    /// <summary>
+    /// Handles all the io with 0ad files
+    /// </summary>
     public class FileHandler
     {
-        public static Actor OpenActorFile(string filePath)
+        /// <summary>
+        /// Open any 0ad file supported that implements I0adXmlSerializableElement
+        /// </summary>
+        /// <typeparam name="T">Type of file</typeparam>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static T Open0adXmlFile<T>(string filePath) where T : I0adXmlSerializableElement, new()
         {
-            Actor actor;
+            T variant;
             // Open the selected file to read.
-
             try
             {
-                using (var actorStream = new StreamReader(@"" + filePath))
+                using (var file = new StreamReader(@"" + filePath))
                 {
-                    var actorFile = XDocument.Parse(actorStream.ReadToEnd());
-                    actor = new Actor(actorFile);
+                    var variantFile = XDocument.Parse(file.ReadToEnd());
+                    variant = new T();
+                    variant.DeserializeSerializeElements(variantFile.Root);
                 }
 
             }
             catch (Exception ex)
             {
-                actor = null;
-                Debug.WriteLine("Error: Parsed file is either malformed or not a actor file. " + ex);
-            }
-
-            return actor;
-        }
-
-        public static Variant OpenVariantFile(string filePath)
-        {
-            Variant variant;
-            // Open the selected file to read.
-            try
-            {
-                using (var athenianDockFile = new StreamReader(@"" + filePath))
-                {
-                    var variantFile = XDocument.Parse(athenianDockFile.ReadToEnd());
-                    variant = new Variant(variantFile);
-                }
-
-            }catch(Exception ex)
-            {
-                variant = null;
-                Debug.WriteLine("Error: Parsed file is either malformed or not a variant file. " + ex);
+                variant = default(T);
+                Debug.WriteLine("Error: Parsed file is either malformed or not a 0AD file. " + ex);
             }
 
             return variant;
+        }
+
+        /// <summary>
+        /// Opens a Json file and stores into an ModJson Item
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static ModJsonFile OpenModJsonFile(string filePath)
+        {
+            ModJsonFile modJsonFile;
+            // Open the selected file to read.
+            try
+            {
+                using (var file = new StreamReader(@"" + filePath))
+                {
+
+                    modJsonFile = JsonConvert.DeserializeObject<ModJsonFile>(file.ReadToEnd());
+                }
+
+            }
+            catch (Exception ex)
+            {
+                modJsonFile = null;
+                Debug.WriteLine("Error: Parsed file is either malformed or not a variant file. " + ex);
+            }
+
+            return modJsonFile;
         }
 
         /// <summary>

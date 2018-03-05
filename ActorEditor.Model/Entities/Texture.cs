@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace ActorEditor.Model
 {
-    public enum TextureType
+    public enum ETextureType
     {
         baseTex,
         normTex,
@@ -15,20 +15,19 @@ namespace ActorEditor.Model
     }
     public class Texture
     {
-        public static Dictionary<string, TextureType> TextureTypeMapper = new Dictionary<string, TextureType>()
+        private static Dictionary<string, ETextureType> TextureTypeMapper = new Dictionary<string, ETextureType>()
         {
-            { "baseTex", TextureType.baseTex},
-            { "specTex", TextureType.specTex},
-            { "normTex", TextureType.normTex},
-            { "aoTex", TextureType.aoTex}
+            { "baseTex", ETextureType.baseTex},
+            { "specTex", ETextureType.specTex},
+            { "normTex", ETextureType.normTex},
+            { "aoTex", ETextureType.aoTex}
         };
 
         private string _relativePath;
-        private TextureType _textureType;
+        private ETextureType _textureType;
 
         public Texture()
         {
-
         }
 
         public Texture(XElement texture)
@@ -37,7 +36,7 @@ namespace ActorEditor.Model
             TextureTypeMapper.TryGetValue(texture.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value, out this._textureType);
         }
 
-        public Texture(string relativePath, TextureType textureType = TextureType.baseTex)
+        public Texture(string relativePath, ETextureType textureType = ETextureType.baseTex)
         {
             this._relativePath = relativePath;
             this._textureType = textureType;
@@ -45,7 +44,7 @@ namespace ActorEditor.Model
 
         public bool IsChecked { get; set; }
         public string RelativePath { get => _relativePath; set => _relativePath = value; }
-        public TextureType TextureType { get => _textureType; set => _textureType = value; }
+        public ETextureType TextureType { get => _textureType; set => _textureType = value; }
 
         public XElement SerializeElements()
         {

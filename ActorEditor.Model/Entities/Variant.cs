@@ -1,4 +1,5 @@
 ﻿using ActorEditor.Model.Entities;
+using ActorEditor.Model.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Xml.Linq;
 
 namespace ActorEditor.Model
 {
-    public class Variant
+    public class Variant : I0adXmlSerializableElement
     {
         public bool IsChecked { get; set; }
 
@@ -32,43 +33,20 @@ namespace ActorEditor.Model
             _color = new ActorColor(null);
         }
 
-        public void Deserialize(XElement variant)
-        {
-            this.Name = variant.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
-            this.ParentVariantRelativePath = variant.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
-            this.Mesh = variant.Elements().FirstOrDefault(a => a.Name.LocalName == "mesh")?.Value;
-            this.Particle = variant.Elements().FirstOrDefault(a => a.Name.LocalName == "particles")?.Value;
-            this.Color = new ActorColor(variant.Elements().FirstOrDefault(a => a.Name.LocalName == "color"));
-
-            uint.TryParse(variant.Attributes().FirstOrDefault(a => a.Name.LocalName == "frequency")?.Value, out this._frequency);
-            if (string.IsNullOrEmpty(this.Name) && string.IsNullOrEmpty(this.ParentVariantRelativePath))
-            {
-                Name = "Base";
-                if (Frequency < 1)
-                    Frequency = 1;
-            }
-
-            _props = new Props(variant.Elements().FirstOrDefault(x => x.Name.LocalName == "props")?.Elements());
-            _textures = new Textures(variant.Elements().FirstOrDefault(x => x.Name.LocalName == "textures")?.Elements());
-            _animations = new Animations(variant.Elements().FirstOrDefault(x => x.Name.LocalName == "animations")?.Elements());
-
-        }
-
         public Variant(XDocument variantFile)
         {
-            Deserialize(variantFile.Elements().FirstOrDefault(a => a.Name == "variant"));
-
+            DeserializeSerializeElements(variantFile.Elements().FirstOrDefault(a => a.Name == "variant"));
         }
 
         public Variant(XElement variant)
         {
-            Deserialize(variant);
+            DeserializeSerializeElements(variant);
         }
 
         public string Name { get => _name; set => _name = value; }
         public string ParentVariantRelativePath { get => _parentVariantRelativePath; set => _parentVariantRelativePath = value; }
 
-        internal XElement SerializeElements()
+        public XElement SerializeElements()
         {
             var curVariant = new XElement("variant");
             if (!string.IsNullOrEmpty(this.ParentVariantRelativePath))
@@ -83,6 +61,13 @@ namespace ActorEditor.Model
                 curVariant.Add(new XElement("color", this.Color.ToString()));
             if (!string.IsNullOrEmpty(this.Mesh))
                 curVariant.Add(new XElement("mesh", this.Mesh));
+            if (!string.IsNullOrEmpty(this.Particle))
+            {
+                var particle = new XElement("particles");
+                particle.Add(new XAttribute("file", this._particle));
+                curVariant.Add(particle);
+            }
+                
             if (this.Props.Count > 0)
                 curVariant.Add(this.Props.SerializeElements());
             if (this.Textures.Count > 0)
@@ -101,6 +86,27 @@ namespace ActorEditor.Model
         public XElement GetVariants()
         {
             return null;
+        }
+
+        public void DeserializeSerializeElements(XElement element)
+        {
+            this.Name = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
+            this.ParentVariantRelativePath = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
+            this.Mesh = element.Elements().FirstOrDefault(a => a.Name.LocalName == "mesh")?.Value;
+            this.Particle = element.Elements().FirstOrDefault(a => a.Name.LocalName == "particles")?.Attributes().FirstOrDefault(a => a.Name.LocalName == "file").Value;
+            this.Color = new ActorColor(element.Elements().FirstOrDefault(a => a.Name.LocalName == "color"));
+
+            uint.TryParse(element.Attributes().FirstOrDefault(a => a.Name.LocalName == "frequency")?.Value, out this._frequency);
+            if (string.IsNullOrEmpty(this.Name) && string.IsNullOrEmpty(this.ParentVariantRelativePath))
+            {
+                Name = "Base";
+                if (Frequency < 1)
+                    Frequency = 1;
+            }
+
+            _props = new Props(element.Elements().FirstOrDefault(x => x.Name.LocalName == "props")?.Elements());
+            _textures = new Textures(element.Elements().FirstOrDefault(x => x.Name.LocalName == "textures")?.Elements());
+            _animations = new Animations(element.Elements().FirstOrDefault(x => x.Name.LocalName == "animations")?.Elements());
         }
     }
 }

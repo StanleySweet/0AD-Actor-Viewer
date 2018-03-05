@@ -6,8 +6,9 @@ namespace ActorEditor.Model
     using System.Xml.Linq;
     using System.Linq;
     using ActorEditor.Model.Entities;
+    using ActorEditor.Model.Interfaces;
 
-    public class Actor
+    public class Actor : I0adXmlSerializableElement
     {
         private uint _version;
         private bool _castsShadows;
@@ -28,23 +29,7 @@ namespace ActorEditor.Model
         public Actor(XDocument actorFile)
         {        
             _groups = new Groups();
-
-            XElement actor = actorFile.Elements().FirstOrDefault(a => a.Name == "actor");
-            this.Version = uint.Parse(actor.Attributes().FirstOrDefault(a => a.Name.LocalName == "version")?.Value);
-            this._castsShadows = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadow") != null;
-            this._floats = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;
-            this._material = actor.Elements().FirstOrDefault(a => a.Name.LocalName == "material")?.Value;
-
-            var xElementGroups = actor.Elements().Where(a => a.Name.LocalName == "group");
-            foreach (var xElementGroup in xElementGroups)
-            {
-                var variants = new Group();
-                var xElementVariants = xElementGroup.Elements().Where(a => a.Name.LocalName == "variant");
-                foreach (var xElementVariant in xElementVariants)
-                    variants.Add(new Variant(xElementVariant));
-
-                _groups.Add(variants);
-            }
+            DeserializeSerializeElements(actorFile.Elements().FirstOrDefault(a => a.Name == "actor"));
         }
 
         public uint Version { get => _version; set => _version = value; }
@@ -52,6 +37,25 @@ namespace ActorEditor.Model
         public bool CastsShadows { get => _castsShadows; set => _castsShadows = value; }
         public string Material { get => _material; set => _material = value; }
         public Groups Groups { get => _groups; set => _groups = value; }
+
+        public void DeserializeSerializeElements(XElement element)
+        {
+            uint.TryParse(element.Attributes().FirstOrDefault(a => a.Name.LocalName == "version")?.Value, out this._version);
+            this._castsShadows = element.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadow") != null;
+            this._floats = element.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;
+            this._material = element.Elements().FirstOrDefault(a => a.Name.LocalName == "material")?.Value;
+
+            var xElementGroups = element.Elements().Where(a => a.Name.LocalName == "group");
+            foreach (var xElementGroup in xElementGroups)
+            {
+                var group = new Group();
+                var xElementVariants = xElementGroup.Elements().Where(a => a.Name.LocalName == "variant");
+                foreach (var xElementVariant in xElementVariants)
+                    group.Add(new Variant(xElementVariant));
+
+                _groups.Add(group);
+            }
+        }
 
         public XElement SerializeElements()
         {
