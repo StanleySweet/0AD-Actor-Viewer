@@ -29,7 +29,7 @@ namespace ActorEditor.Model
         public Actor(XDocument actorFile)
         {        
             _groups = new Groups();
-            DeserializeSerializeElements(actorFile.Elements().FirstOrDefault(a => a.Name == "actor"));
+            DeserializeElements(actorFile.Elements().FirstOrDefault(a => a.Name == "actor"));
         }
 
         public uint Version { get => _version; set => _version = value; }
@@ -38,8 +38,11 @@ namespace ActorEditor.Model
         public string Material { get => _material; set => _material = value; }
         public Groups Groups { get => _groups; set => _groups = value; }
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
+            if (!element.Name.LocalName.Equals("actor"))
+                throw new System.TypeLoadException();
+
             uint.TryParse(element.Attributes().FirstOrDefault(a => a.Name.LocalName == "version")?.Value, out this._version);
             this._castsShadows = element.Elements().FirstOrDefault(a => a.Name.LocalName == "castshadow") != null;
             this._floats = element.Elements().FirstOrDefault(a => a.Name.LocalName == "float") != null;

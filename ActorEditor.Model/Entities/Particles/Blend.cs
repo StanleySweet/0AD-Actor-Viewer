@@ -41,10 +41,10 @@ namespace ActorEditor.Model.Entities.Particles
 
         public Blend(XElement blend)
         {
-            DeserializeSerializeElements(blend);
+            DeserializeElements(blend);
         }
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
             BlendModeMapper.TryGetValue(element.Attributes().FirstOrDefault(a => BLEND_NODE_NAME.Equals(a.Name.LocalName))?.Value, out this._mode);
         }

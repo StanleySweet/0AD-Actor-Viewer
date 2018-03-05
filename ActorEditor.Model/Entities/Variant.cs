@@ -35,12 +35,12 @@ namespace ActorEditor.Model
 
         public Variant(XDocument variantFile)
         {
-            DeserializeSerializeElements(variantFile.Elements().FirstOrDefault(a => a.Name == "variant"));
+            DeserializeElements(variantFile.Elements().FirstOrDefault(a => a.Name == "variant"));
         }
 
         public Variant(XElement variant)
         {
-            DeserializeSerializeElements(variant);
+            DeserializeElements(variant);
         }
 
         public string Name { get => _name; set => _name = value; }
@@ -88,8 +88,10 @@ namespace ActorEditor.Model
             return null;
         }
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
+            if (!element.Name.LocalName.Equals("variant"))
+                throw new System.TypeLoadException();
             this.Name = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
             this.ParentVariantRelativePath = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
             this.Mesh = element.Elements().FirstOrDefault(a => a.Name.LocalName == "mesh")?.Value;

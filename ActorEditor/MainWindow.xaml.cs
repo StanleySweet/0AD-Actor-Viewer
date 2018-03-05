@@ -2,6 +2,7 @@
 {
     using ActorEditor.Model;
     using ActorEditor.Model.Entities;
+    using ActorEditor.Model.Entities.Mod;
     using Microsoft.Win32;
     using System;
     using System.ComponentModel;
@@ -20,6 +21,7 @@
     public partial class MainWindow : Window
     {
         private Actor _actor;
+        private ModJsonFile _modJsonFile;
         private bool _actorMode;
         private bool _particleMode;
         private bool _soundGroupMode;
@@ -39,7 +41,7 @@
             _rootPath = ConfigurationManager.AppSettings["material_path"];
             var truncateIndex = _rootPath.IndexOf("\\materials\\");
             if (truncateIndex > 0)
-                _rootPath = _rootPath.Substring(0, truncateIndex);
+                _rootPath = _rootPath.Substring(0, truncateIndex);      
             Materials.ItemsSource = FileHandler.GetMaterialList(ConfigurationManager.AppSettings["material_path"]);
         }
 
@@ -129,10 +131,19 @@
             _soundGroupMode = false;
             _particleMode = false;
             _modJsonMode = false;
-
         }
 
-        private void BrowseForObject(string filter, out string relativePath, string initialDirectory = "", bool multiSelection = false)
+        private void SetModJsonMode()
+        {
+            _variantMode = true;
+            _actorMode = false;
+            _particleMode = false;
+            _soundGroupMode = false;
+            _particleMode = false;
+            _modJsonMode = true;
+        }
+
+        private void BrowseForObject(string filter, out string relativePath, out bool? WasCancelled, string initialDirectory = "", bool multiSelection = false)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -145,9 +156,12 @@
                 openFileDialog.InitialDirectory = initialDirectory;
 
             relativePath = string.Empty;
+            WasCancelled = null;
 
-            if (openFileDialog.ShowDialog() != true)
-                return;
+            var result = openFileDialog.ShowDialog();
+
+            if (result == false)
+                WasCancelled = true;
 
             relativePath = openFileDialog.FileName;
         }
@@ -246,7 +260,10 @@
 
         private void BrowseForAnimation(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("DAE Files (.dae)|*.dae", out string path);
+            BrowseForObject("DAE Files (.dae)|*.dae", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
+
             var truncateIndex = path.IndexOf("\\art\\animations\\");
             if (truncateIndex > 0)
                 path = path.Substring(truncateIndex + "\\art\\animations\\".Length);
@@ -298,7 +315,10 @@
 
         private void BrowseForProp(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("XML Files (.xml)|*.xml", out string path);
+            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
+
             var truncateIndex = path.IndexOf("\\art\\actors\\props\\");
             if (truncateIndex > 0)
                 path = path.Substring(truncateIndex + "\\art\\actors\\props\\".Length);
@@ -350,7 +370,10 @@
 
         private void BrowseForTexture(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("DDS Files(*.dds)| *.dds|PNG Files(*.png)| *.png", out string path);
+            BrowseForObject("DDS Files(*.dds)| *.dds|PNG Files(*.png)| *.png", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
+
             var truncateIndex = path.IndexOf("\\art\\textures\\skins\\") ;
             if (truncateIndex > 0)
                 path = path.Substring(truncateIndex + "\\art\\textures\\skins\\".Length);
@@ -389,8 +412,7 @@
 
             _currentGroup.Add(new Variant());
             var groupIndex = _actor.Groups.IndexOf(_currentGroup);
-            ICollectionView view = CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]);
-            view.Refresh();
+            CollectionViewSource.GetDefaultView(_actor.Groups[groupIndex]).Refresh();
         }
 
         private void DeleteVariant(object sender, RoutedEventArgs e)
@@ -445,7 +467,9 @@
 
         private void BrowseForVariant(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("XML Files (.xml)|*.xml", out string path);
+            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
             var truncateIndex = path.IndexOf("\\art\\variants\\");
             if (truncateIndex > 0)
                 path = path.Substring(truncateIndex + "\\art\\variants\\".Length);
@@ -469,7 +493,9 @@
         private void BrowseForMesh(object sender, RoutedEventArgs e)
         {
 
-            BrowseForObject("DAE Files (.dae)|*.dae", out string path);
+            BrowseForObject("DAE Files (.dae)|*.dae", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
             var truncateIndex = path.IndexOf("\\art\\meshes\\");
             if (truncateIndex > 0)
                 path = path.Substring(truncateIndex + "\\art\\meshes\\".Length);
@@ -522,6 +548,7 @@
             actorOptions.Visibility = Visibility.Collapsed;
             groupview.Visibility = Visibility.Collapsed;
             logoBox.Visibility = Visibility.Collapsed;
+            ModJsonView.Visibility = Visibility.Collapsed;
             variantview.Visibility = Visibility.Visible;
             this.DataContext = _currentGroup;
         }
@@ -546,15 +573,66 @@
             variantview.Visibility = Visibility.Collapsed;
             DeleteVariantButton.Visibility = Visibility.Visible;
             AddVariantButton.Visibility = Visibility.Visible;
+            ModJsonView.Visibility = Visibility.Collapsed;
             GoBackButton.Visibility = Visibility.Visible;
             this.DataContext = _actor.Groups;
             Materials.SelectedIndex = 0;
         }
 
+        private void OpenModFile(object sender, RoutedEventArgs e)
+        {
+            SetModJsonMode();
+            BrowseForObject("Json Files (.json)|*.json", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
+            {
+                _modJsonFile = FileHandler.OpenModJsonFile(path);
+
+                if (_modJsonFile == null)
+                {
+                    MessageBoxResult result = MessageBox.Show("Error: Parsed file is either malformed or not a actor file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Application.Current.Shutdown();
+                    }
+                    return;
+                }
+
+                floats.IsEnabled = true;
+                castsShadows.IsEnabled = true;
+                castsShadows.IsChecked = _actor.CastsShadows;
+
+                var index = 0;
+                foreach (var item in Materials.Items)
+                {
+                    if (item.ToString().Equals(_actor.Material))
+                        break;
+                    ++index;
+                }
+                SaveAsButton.IsEnabled = true;
+                SaveButton.IsEnabled = true;
+                SaveMenu.IsEnabled = true;
+                SaveAsMenu.IsEnabled = true;
+                Materials.SelectedIndex = index;
+                floats.IsChecked = _actor.Floats;
+                actorOptions.Visibility = Visibility.Collapsed;
+                groupview.Visibility = Visibility.Collapsed;
+                variantview.Visibility = Visibility.Collapsed;
+                logoBox.Visibility = Visibility.Collapsed;
+                DeleteVariantButton.Visibility = Visibility.Collapsed;
+                AddVariantButton.Visibility = Visibility.Collapsed;
+                GoBackButton.Visibility = Visibility.Collapsed;
+                ModJsonView.Visibility = Visibility.Visible;
+                this.DataContext = _modJsonFile;
+            }
+        }
+
         private void OpenActor(object sender, RoutedEventArgs e)
         {
             SetActorMode();
-            BrowseForObject("XML Files (.xml)|*.xml", out string path);
+            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
 
             {
                 _actor = FileHandler.Open0adXmlFile<Actor>(path);
@@ -601,8 +679,10 @@
         private void OpenVariant(object sender, RoutedEventArgs e)
         {
             SetVariantMode();
-            BrowseForObject("XML Files (.xml)|*.xml", out string path);
-
+            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            if (WasCancelled == true)
+                return;
+            
             var variant = FileHandler.Open0adXmlFile<Variant>(path);
             if (variant == null)
             {
@@ -617,7 +697,7 @@
             {
                 variant
             };
-
+            actorOptions.Visibility = Visibility.Hidden;
             GoBackButton.Visibility = Visibility.Collapsed;
             SaveAsButton.IsEnabled = true;
             SaveAsMenu.IsEnabled = true;

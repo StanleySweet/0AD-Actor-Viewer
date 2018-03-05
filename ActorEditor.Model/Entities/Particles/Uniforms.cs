@@ -8,7 +8,7 @@ namespace ActorEditor.Model.Entities.Particles
 {
     class Uniforms : HashSet<Uniform>, I0adXmlSerializableElement
     {
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
             throw new NotImplementedException();
         }

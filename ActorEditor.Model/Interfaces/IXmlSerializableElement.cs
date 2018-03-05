@@ -14,7 +14,7 @@ namespace ActorEditor.Model.Interfaces
         /// Set all object's properities from an xml element
         /// </summary>
         /// <param name="element"></param>
-        void DeserializeSerializeElements(XElement element);
+        void DeserializeElements(XElement element);
         /// <summary>
         /// Serialize all object's properties into an xml element;
         /// </summary>

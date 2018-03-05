@@ -32,11 +32,9 @@ namespace ActorEditor.Model
             {
                 using (var file = new StreamReader(@"" + filePath))
                 {
-                    var variantFile = XDocument.Parse(file.ReadToEnd());
                     variant = new T();
-                    variant.DeserializeSerializeElements(variantFile.Root);
+                    variant.DeserializeElements(XDocument.Parse(file.ReadToEnd()).Root);
                 }
-
             }
             catch (Exception ex)
             {

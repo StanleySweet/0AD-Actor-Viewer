@@ -23,7 +23,7 @@ namespace ActorEditor.Model.Entities.Particles
 
         }
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
             throw new NotImplementedException();
         }

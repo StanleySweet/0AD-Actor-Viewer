@@ -18,10 +18,10 @@ namespace ActorEditor.Model.Entities.Particles
 
         public Copy(XElement copy)
         {
-            DeserializeSerializeElements(copy);
+            DeserializeElements(copy);
         }
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
             throw new NotImplementedException();
         }

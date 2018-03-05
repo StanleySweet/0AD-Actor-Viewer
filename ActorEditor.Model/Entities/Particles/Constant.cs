@@ -24,7 +24,7 @@ namespace ActorEditor.Model.Entities.Particles
 
         public Constant(XElement constant)
         {
-            DeserializeSerializeElements(constant);
+            DeserializeElements(constant);
         }
 
         public XElement SerializeElements()
@@ -32,7 +32,7 @@ namespace ActorEditor.Model.Entities.Particles
             throw new NotImplementedException();
         }
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         {
             this._name = element.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals(CONSTANT_NAME_ATTRIBUTE_NAME))?.Value;
             float.TryParse(element.Attributes().FirstOrDefault(a => a.Name.LocalName.Equals(CONSTANT_VALUE_ATTRIBUTE_NAME))?.Value, out this._value);

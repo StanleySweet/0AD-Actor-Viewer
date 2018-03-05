@@ -12,7 +12,7 @@ namespace ActorEditor.Model.Entities.Particles
         int _min;
         int _max;
 
-        public void DeserializeSerializeElements(XElement element)
+        public void DeserializeElements(XElement element)
         { 
                 throw new NotImplementedException();
         }
