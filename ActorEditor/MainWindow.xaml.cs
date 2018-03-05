@@ -38,7 +38,8 @@
         public MainWindow()
         {
             InitializeComponent();
-            if(string.IsNullOrEmpty(ConfigurationManager.AppSettings["material_path"]))
+            MainTitle.Text = "Pyrogenesis Actor Editor";
+            if (string.IsNullOrEmpty(ConfigurationManager.AppSettings["material_path"]))
             {
                 SetMaterialPath_Click(null, null);
             }
@@ -48,7 +49,7 @@
             }
         }
 
-        public void LoadMaterials()
+        private void LoadMaterials()
         {
             _rootPath = ConfigurationManager.AppSettings["material_path"];
             var truncateIndex = _rootPath.IndexOf("\\materials\\");
@@ -415,6 +416,7 @@
             groupview.Visibility = Visibility.Visible;
             variantview.Visibility = Visibility.Collapsed;
             _currentGroup = null;
+            MainTitle.Text = "Add/Remove Groups";
             this.DataContext = _actor.Groups;
         }
 
@@ -449,6 +451,7 @@
             if (_currentVariant == null)
                 return;
 
+            MainTitle.Text = "Add/Remove Animations";
             animationView.Visibility = Visibility.Visible;
             variantview.Visibility = Visibility.Collapsed;
             this.DataContext = _currentVariant.Animations;
@@ -461,6 +464,7 @@
             if (_currentVariant == null)
                 return;
 
+            MainTitle.Text = "Add/Remove Props";
             propView.Visibility = Visibility.Visible;
             variantview.Visibility = Visibility.Collapsed;
             this.DataContext = _currentVariant.Props;
@@ -473,6 +477,7 @@
             if (_currentVariant == null)
                 return;
 
+            MainTitle.Text = "Add/Remove Textures";
             textureView.Visibility = Visibility.Visible;
             variantview.Visibility = Visibility.Collapsed;
             this.DataContext = _currentVariant.Textures;
@@ -532,6 +537,10 @@
 
         private void GoBackToVariantView(object sender, RoutedEventArgs e)
         {
+            if(_actorMode)
+                MainTitle.Text = "Add/Remove Variants";
+            else
+                MainTitle.Text = "Edit Variant";
             animationView.Visibility = Visibility.Collapsed;
             textureView.Visibility = Visibility.Collapsed;
             propView.Visibility = Visibility.Collapsed;
@@ -545,6 +554,7 @@
         #region Menu
         private void CreateVariant(object sender, RoutedEventArgs e)
         {
+            MainTitle.Text = "Edit Variant";
             SetVariantMode();
             _currentGroup = new Group
             {
@@ -568,6 +578,7 @@
 
         private void CreateActor(object sender, RoutedEventArgs e)
         {
+            MainTitle.Text = "Add/Remove Groups";
             SetActorMode();
             _actor = new Actor();
             _actor.Groups.Add(new Group());
@@ -598,6 +609,7 @@
             BrowseForObject("Json Files (.json)|*.json", out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
+            MainTitle.Text = "Edit Mod.json";
             {
                 _modJsonFile = FileHandler.OpenModJsonFile(path);
 
@@ -633,6 +645,7 @@
             if (WasCancelled == true)
                 return;
 
+            MainTitle.Text = "Add/Remove Groups";
             {
                 _actor = FileHandler.Open0adXmlFile<Actor>(path);
 
@@ -661,6 +674,7 @@
                 SaveButton.IsEnabled = true;
                 SaveMenu.IsEnabled = true;
                 SaveAsMenu.IsEnabled = true;
+                _currentGroup = null;
                 Materials.SelectedIndex = index;
                 floats.IsChecked = _actor.Floats;
                 actorOptions.Visibility = Visibility.Visible;
@@ -683,6 +697,7 @@
             if (WasCancelled == true)
                 return;
 
+            MainTitle.Text = "Edit Variant";
             var variant = FileHandler.Open0adXmlFile<Variant>(path);
             if (variant == null)
             {
