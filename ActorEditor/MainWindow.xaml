@@ -105,6 +105,7 @@
                             </MenuItem>
                             <MenuItem Name="SaveMenu" IsEnabled="False" Header="_Save" Click="Save"/>
                             <MenuItem Name="SaveAsMenu" IsEnabled="False" Header="_Save As" Click="SaveAs"/>
+                            <MenuItem Name="SetMaterialPath" Header="_Set Material Path" Click="SetMaterialPath_Click"/>
                             <MenuItem Header="_Exit" Click="Exit"/>
                         </Menu>
                     </DockPanel>

@@ -83,7 +83,7 @@ namespace ActorEditor.Model
             {
                 pathList = Directory.GetFiles(path);
                 for (int i = 0; i != pathList.Length; ++i)
-                    pathList[i] = pathList[i].Replace(path, "");
+                    pathList[i] = pathList[i].Replace(path + @"\", "");
             }
             catch (Exception)
             {

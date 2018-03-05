@@ -4,8 +4,8 @@
     using ActorEditor.Model.Entities;
     using ActorEditor.Model.Entities.Mod;
     using Microsoft.Win32;
+    using Microsoft.WindowsAPICodePack.Dialogs;
     using System;
-    using System.ComponentModel;
     using System.Configuration;
     using System.Linq;
     using System.Windows;
@@ -38,11 +38,23 @@
         public MainWindow()
         {
             InitializeComponent();
+            if(string.IsNullOrEmpty(ConfigurationManager.AppSettings["material_path"]))
+            {
+                SetMaterialPath_Click(null, null);
+            }
+            else
+            {
+                LoadMaterials();
+            }
+        }
+
+        public void LoadMaterials()
+        {
             _rootPath = ConfigurationManager.AppSettings["material_path"];
             var truncateIndex = _rootPath.IndexOf("\\materials\\");
             if (truncateIndex > 0)
                 _rootPath = _rootPath.Substring(0, truncateIndex);
-            Materials.ItemsSource = FileHandler.GetMaterialList(ConfigurationManager.AppSettings["material_path"]);
+            Materials.ItemsSource = FileHandler.GetMaterialList(@"" + ConfigurationManager.AppSettings["material_path"]);
         }
 
         private void CastsShadows_Checked(object sender, RoutedEventArgs e)
@@ -57,7 +69,8 @@
 
         private void Materials_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _actor.Material = this.Materials.SelectedItem.ToString();
+            if (this.Materials.SelectedItem != null)
+                _actor.Material = this.Materials.SelectedItem.ToString();
         }
 
         private void AddGroup(object sender, RoutedEventArgs e)
@@ -815,6 +828,44 @@
         /// <param name="e"></param>
         private void RemoveDependency(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void SetMaterialPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true
+            };
+            CommonFileDialogResult result = dialog.ShowDialog();
+            if (result == CommonFileDialogResult.Cancel)
+                return;
+            // ConfigurationManager.AppSettings["material_path"] = @"" + dialog.FileName.Replace(@"\\", @"\");
+
+            AddUpdateAppSettings("material_path", @"" + dialog.FileName.Replace(@"\\", @"\")); 
+            LoadMaterials();
+        }
+
+        private void AddUpdateAppSettings(string key, string value)
+        {
+            try
+            {
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                var settings = configFile.AppSettings.Settings;
+                if (settings[key] == null)
+                {
+                    settings.Add(key, value);
+                }
+                else
+                {
+                    settings[key].Value = value;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+            }
+            catch (ConfigurationErrorsException)
+            {
+                Console.WriteLine("Error writing app settings");
+            }
         }
     }
 }
