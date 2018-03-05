@@ -5,19 +5,14 @@ using System.Xml.Linq;
 namespace ActorEditor.Model.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class ActorTest
     {
         private Actor _athenianDockActor;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            using (var athenianDockFile = new StreamReader(@"G:\ActorEditor\ActorEditor.Model.Tests\athenian_dock.xml"))
-            {
-                var actorFile = XDocument.Parse(athenianDockFile.ReadToEnd());
-                _athenianDockActor = new Actor(actorFile);
-                
-            }
+            _athenianDockActor = FileHandler.Open0adXmlFile<Actor>(@"E:\ActorEditor\ActorEditor.Model.Tests\test_mod\art\actors\structures\civname\dock.xml");
         } 
 
         [TestMethod]
