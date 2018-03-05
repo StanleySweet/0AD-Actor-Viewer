@@ -51,7 +51,7 @@ namespace ActorEditor.Model
         public bool IsSelectable { get => _IsSelectable; set => _IsSelectable = value; }
         public decimal MinHeight { get => _minHeight; set => _minHeight = value; }
         public string AttachPoint { get => attachPoint; set => attachPoint = value; }
-        public string RelativePath { get => _relativePath; set => _relativePath = value; }
+        public string RelativePath { get => _relativePath; set => _relativePath = value?.Replace("\\", "/"); }
         public decimal MaxHeight { get => _maxHeight; set => _maxHeight = value; }
     }
 }

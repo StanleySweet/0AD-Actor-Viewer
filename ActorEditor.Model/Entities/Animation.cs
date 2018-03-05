@@ -75,7 +75,7 @@ namespace ActorEditor.Model
         /// <summary>
         /// Path to the animation file.
         /// </summary>
-        public string RelativePath { get => _relativePath; set => _relativePath = value; }
+        public string RelativePath { get => _relativePath; set => _relativePath = value?.Replace("\\", "/"); }
 
         internal XElement SerializeElements()
         {

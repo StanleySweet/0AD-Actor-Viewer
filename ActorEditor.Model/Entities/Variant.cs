@@ -44,7 +44,7 @@ namespace ActorEditor.Model
         }
 
         public string Name { get => _name; set => _name = value; }
-        public string ParentVariantRelativePath { get => _parentVariantRelativePath; set => _parentVariantRelativePath = value; }
+        public string ParentVariantRelativePath { get => _parentVariantRelativePath; set => _parentVariantRelativePath = value.Replace("\\", "/"); }
 
         public XElement SerializeElements()
         {
@@ -76,8 +76,8 @@ namespace ActorEditor.Model
         }
 
         public uint Frequency { get => _frequency; set => _frequency = value; }
-        public string Mesh { get => _mesh; set => _mesh = value; }
-        public string Particle { get => _particle; set => _particle = value; }
+        public string Mesh { get => _mesh; set => _mesh = value?.Replace("\\", "/"); }
+        public string Particle { get => _particle; set => _particle = value?.Replace("\\", "/"); }
         public Textures Textures { get => _textures; set => _textures = value; }
         internal ActorColor Color { get => _color; set => _color = value; }
         internal Decal Decal { get => _decal; set => _decal = value; }
@@ -92,14 +92,14 @@ namespace ActorEditor.Model
         {
             if (!element.Name.LocalName.Equals(Constants.VARIANT_ROOT_TAG_NAME))
                 throw new System.TypeLoadException();
-            this.Name = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
-            this.ParentVariantRelativePath = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
-            this.Mesh = element.Elements().FirstOrDefault(a => a.Name.LocalName == "mesh")?.Value;
-            this.Particle = element.Elements().FirstOrDefault(a => a.Name.LocalName == "particles")?.Attributes().FirstOrDefault(a => a.Name.LocalName == "file").Value;
-            this.Color = new ActorColor(element.Elements().FirstOrDefault(a => a.Name.LocalName == "color"));
+            this._name = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "name")?.Value;
+            this._parentVariantRelativePath = element.Attributes().FirstOrDefault(a => a.Name.LocalName == "file")?.Value;
+            this._mesh = element.Elements().FirstOrDefault(a => a.Name.LocalName == "mesh")?.Value;
+            this._particle = element.Elements().FirstOrDefault(a => a.Name.LocalName == "particles")?.Attributes().FirstOrDefault(a => a.Name.LocalName == "file").Value;
+            this._color = new ActorColor(element.Elements().FirstOrDefault(a => a.Name.LocalName == "color"));
 
             uint.TryParse(element.Attributes().FirstOrDefault(a => a.Name.LocalName == "frequency")?.Value, out this._frequency);
-            if (string.IsNullOrEmpty(this.Name) && string.IsNullOrEmpty(this.ParentVariantRelativePath))
+            if (string.IsNullOrEmpty(this._name) && string.IsNullOrEmpty(this._parentVariantRelativePath))
             {
                 Name = "Base";
                 if (Frequency < 1)

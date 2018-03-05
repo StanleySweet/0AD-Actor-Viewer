@@ -43,7 +43,7 @@ namespace ActorEditor.Model
         }
 
         public bool IsChecked { get; set; }
-        public string RelativePath { get => _relativePath; set => _relativePath = value; }
+        public string RelativePath { get => _relativePath; set => _relativePath = value?.Replace("\\", "/"); }
         public ETextureType TextureType { get => _textureType; set => _textureType = value; }
 
         public XElement SerializeElements()
