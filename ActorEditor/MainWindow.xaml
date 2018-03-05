@@ -198,14 +198,14 @@
                                                     <GridViewColumn Header="Parent File" Width="150">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <TextBox Text="{Binding Path=ParentVariantRelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
+                                                                <TextBox MouseDoubleClick="BrowseForVariant" Text="{Binding Path=ParentVariantRelativePath}" Width="150"  Height="25" TextWrapping="NoWrap"/>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>
                                                     <GridViewColumn Header="Model"  Width="150">
                                                         <GridViewColumn.CellTemplate>
                                                             <DataTemplate>
-                                                                <TextBox Text="{Binding Path=Mesh}"  Width="150" Height="25"  TextWrapping="NoWrap"/>
+                                                                <TextBox MouseDoubleClick="BrowseForMesh" Text="{Binding Path=Mesh}"  Width="150" Height="25"  TextWrapping="NoWrap"/>
                                                             </DataTemplate>
                                                         </GridViewColumn.CellTemplate>
                                                     </GridViewColumn>

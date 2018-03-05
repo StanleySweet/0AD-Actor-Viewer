@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<variant name="Blacksmith test" frequency="1">
+  <mesh>structural/celt_blacksmith_struct1.dae</mesh>
+  <props>
+    <prop attachpoint="root" actor="props/structures/celts/blacksmith_props.xml" />
+    <prop attachpoint="root" actor="props/structures/celts/blacksmith_props_new.xml" />
+    <prop attachpoint="celt_armorstand" actor="props/structures/celts/blacksmith_armorstand_wood.xml" />
+    <prop attachpoint="celt_armorstand" actor="props/structures/celts/blacksmith_armorstand_armor.xml" />
+    <prop attachpoint="smoke" actor="particle/smoke_blacksmith.xml" />
+    <prop attachpoint="fire" actor="particle/flame.xml" />
+    <prop attachpoint="fire1" actor="particle/flame.xml" />
+    <prop attachpoint="fire2" actor="particle/flame.xml" />
+    <prop attachpoint="root" actor="props/structures/decals/dirt_4x4.xml" />
+    <prop attachpoint="celtbarrels" actor="props/structures/celts/blacksmith_barrels.xml" />
+    <prop attachpoint="celtcube" actor="props/structures/celts/blacksmith_bucket_water.xml" />
+    <prop attachpoint="celtcube" actor="props/structures/celts/blacksmith_bucket.xml" />
+  </props>
+  <textures>
+    <texture file="structural/brit_struct_1.png" name="baseTex" />
+    <texture file="structural/celt_struct_1_norm.png" name="normTex" />
+    <texture file="structural/celt_struct_1_spec.png" name="specTex" />
+    <texture file="structural/ao/celt_blacksmith.png" name="aoTex" />
+  </textures>
+</variant>

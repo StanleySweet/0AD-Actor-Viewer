@@ -39,7 +39,7 @@
         {
             InitializeComponent();
             MainTitle.Text = "Pyrogenesis Actor Editor";
-            if (string.IsNullOrEmpty(ConfigurationManager.AppSettings["material_path"]))
+            if (string.IsNullOrEmpty(ConfigurationManager.AppSettings[Constants.MATERIAL_PATH_SETTING_KEY]))
             {
                 SetMaterialPath_Click(null, null);
             }
@@ -51,11 +51,11 @@
 
         private void LoadMaterials()
         {
-            _rootPath = ConfigurationManager.AppSettings["material_path"];
+            _rootPath = ConfigurationManager.AppSettings[Constants.MATERIAL_PATH_SETTING_KEY];
             var truncateIndex = _rootPath.IndexOf("\\materials\\");
             if (truncateIndex > 0)
                 _rootPath = _rootPath.Substring(0, truncateIndex);
-            Materials.ItemsSource = FileHandler.GetMaterialList(@"" + ConfigurationManager.AppSettings["material_path"]);
+            Materials.ItemsSource = FileHandler.GetMaterialList(@"" + ConfigurationManager.AppSettings[Constants.MATERIAL_PATH_SETTING_KEY]);
         }
 
         private void CastsShadows_Checked(object sender, RoutedEventArgs e)
@@ -274,13 +274,13 @@
 
         private void BrowseForAnimation(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("DAE Files (.dae)|*.dae", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.DAE_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
 
-            var truncateIndex = path.IndexOf("\\art\\animations\\");
+            var truncateIndex = path.IndexOf(Constants.ANIMATION_FOLDER_RELATIVE_PATH);
             if (truncateIndex > 0)
-                path = path.Substring(truncateIndex + "\\art\\animations\\".Length);
+                path = path.Substring(truncateIndex + Constants.ANIMATION_FOLDER_RELATIVE_PATH.Length);
 
             Animation variant;
             for (var i = variantListview.Items.Count - 1; i != -1; --i)
@@ -329,13 +329,13 @@
 
         private void BrowseForProp(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.XML_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
 
-            var truncateIndex = path.IndexOf("\\art\\actors\\props\\");
+            var truncateIndex = path.IndexOf(Constants.PROPS_FOLDER_RELATIVE_PATH);
             if (truncateIndex > 0)
-                path = path.Substring(truncateIndex + "\\art\\actors\\props\\".Length);
+                path = path.Substring(truncateIndex + Constants.PROPS_FOLDER_RELATIVE_PATH.Length);
 
             Prop prop;
             for (var i = propViewListView.Items.Count - 1; i != -1; --i)
@@ -384,13 +384,13 @@
 
         private void BrowseForTexture(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("DDS Files(*.dds)| *.dds|PNG Files(*.png)| *.png", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.PNG_DDS_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
 
-            var truncateIndex = path.IndexOf("\\art\\textures\\skins\\");
+            var truncateIndex = path.IndexOf(Constants.SKINS_FOLDER_RELATIVE_PATH);
             if (truncateIndex > 0)
-                path = path.Substring(truncateIndex + "\\art\\textures\\skins\\".Length);
+                path = path.Substring(truncateIndex + Constants.SKINS_FOLDER_RELATIVE_PATH.Length);
 
             Texture texture;
             for (var i = textureViewListView.Items.Count - 1; i != -1; --i)
@@ -485,12 +485,12 @@
 
         private void BrowseForVariant(object sender, RoutedEventArgs e)
         {
-            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.XML_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
-            var truncateIndex = path.IndexOf("\\art\\variants\\");
+            var truncateIndex = path.IndexOf(Constants.VARIANT_FOLDER_RELATIVE_PATH);
             if (truncateIndex > 0)
-                path = path.Substring(truncateIndex + "\\art\\variants\\".Length);
+                path = path.Substring(truncateIndex + Constants.VARIANT_FOLDER_RELATIVE_PATH.Length);
 
             Variant variant;
             for (var i = variantListview.Items.Count - 1; i != -1; --i)
@@ -511,12 +511,12 @@
         private void BrowseForMesh(object sender, RoutedEventArgs e)
         {
 
-            BrowseForObject("DAE Files (.dae)|*.dae", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.DAE_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
-            var truncateIndex = path.IndexOf("\\art\\meshes\\");
+            var truncateIndex = path.IndexOf(Constants.MESHES_FOLDER_RELATIVE_PATH);
             if (truncateIndex > 0)
-                path = path.Substring(truncateIndex + "\\art\\meshes\\".Length);
+                path = path.Substring(truncateIndex + Constants.MESHES_FOLDER_RELATIVE_PATH.Length);
 
 
             Variant variant;
@@ -606,7 +606,7 @@
         private void OpenModFile(object sender, RoutedEventArgs e)
         {
             SetModJsonMode();
-            BrowseForObject("Json Files (.json)|*.json", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.JSON_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
             MainTitle.Text = "Edit Mod.json";
@@ -641,11 +641,10 @@
         private void OpenActor(object sender, RoutedEventArgs e)
         {
             SetActorMode();
-            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.XML_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
 
-            MainTitle.Text = "Add/Remove Groups";
             {
                 _actor = FileHandler.Open0adXmlFile<Actor>(path);
 
@@ -659,6 +658,7 @@
                     return;
                 }
 
+                MainTitle.Text = "Add/Remove Groups";
                 floats.IsEnabled = true;
                 castsShadows.IsEnabled = true;
                 castsShadows.IsChecked = _actor.CastsShadows;
@@ -693,11 +693,10 @@
         private void OpenVariant(object sender, RoutedEventArgs e)
         {
             SetVariantMode();
-            BrowseForObject("XML Files (.xml)|*.xml", out string path, out bool? WasCancelled);
+            BrowseForObject(Constants.XML_FILTER_STRING, out string path, out bool? WasCancelled);
             if (WasCancelled == true)
                 return;
 
-            MainTitle.Text = "Edit Variant";
             var variant = FileHandler.Open0adXmlFile<Variant>(path);
             if (variant == null)
             {
@@ -708,6 +707,7 @@
                 }
                 return;
             }
+            MainTitle.Text = "Edit Variant";
             _currentGroup = new Group
             {
                 variant
@@ -732,11 +732,11 @@
             string relativePath = string.Empty;
             if(_modJsonFile != null && _modJsonMode)
             {
-                SaveObject("Json Files (.json)|*.json", out relativePath);
+                SaveObject(Constants.JSON_FILTER_STRING, out relativePath);
             }
             else
             {
-                SaveObject("XML Files (.xml)|*.xml", out relativePath);
+                SaveObject(Constants.XML_FILTER_STRING, out relativePath);
             }
 
             SaveHandler(relativePath);
@@ -798,7 +798,7 @@
 
         private void Exit(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Do you want to close this window?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show(Constants.DO_YOU_WANT_TO_CLOSE_THIS_WINDOW, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
                 Application.Current.Shutdown();
@@ -854,9 +854,8 @@
             CommonFileDialogResult result = dialog.ShowDialog();
             if (result == CommonFileDialogResult.Cancel)
                 return;
-            // ConfigurationManager.AppSettings["material_path"] = @"" + dialog.FileName.Replace(@"\\", @"\");
 
-            AddUpdateAppSettings("material_path", @"" + dialog.FileName.Replace(@"\\", @"\")); 
+            AddUpdateAppSettings(Constants.MATERIAL_PATH_SETTING_KEY, @"" + dialog.FileName.Replace(@"\\", @"\")); 
             LoadMaterials();
         }
 
@@ -879,7 +878,7 @@
             }
             catch (ConfigurationErrorsException)
             {
-                Console.WriteLine("Error writing app settings");
+                Console.WriteLine(Constants.ERROR_WRITING_APPSETTINGS);
             }
         }
     }
