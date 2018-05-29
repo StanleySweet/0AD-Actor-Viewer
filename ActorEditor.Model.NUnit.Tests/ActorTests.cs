@@ -1,22 +1,20 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
-using System.Xml.Linq;
+using NUnit.Framework;
 
 namespace ActorEditor.Model.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class ActorTest
     {
         private Actor _athenianDockActor;
 
-        [TestInitialize]
-        public void TestInitialize()
+        [OneTimeSetUp]
+        public void Init()
         {
-            _athenianDockActor = FileHandler.Open0adXmlFile<Actor>(@"E:\ActorEditor\ActorEditor.Model.Tests\test_mod\art\actors\structures\civname\dock.xml");
+            _athenianDockActor = FileHandler.Open0adXmlFile<Actor>(@"E:\ActorEditor\ActorEditor.Model.NUnit.Tests\test_mod\art\actors\structures\civname\dock.xml");
         } 
 
-        [TestMethod]
-        public void XMLParse()
+        [Test]
+        public void XMLActorParse()
         {
             Assert.AreEqual(_athenianDockActor.Version, (uint) 1);
             Assert.AreEqual(true, _athenianDockActor.Floats);

@@ -1,54 +1,50 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Reflection;
+﻿using NUnit.Framework;
 
 namespace ActorEditor.Model.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class VariantTest
     {
         private Variant _variantFile;
 
-        [TestInitialize]
+        [OneTimeSetUp]
         public void TestInitialize()
         {
-            _variantFile = FileHandler.Open0adXmlFile<Variant>(@"E:\ActorEditor\ActorEditor.Model.Tests\test_mod\art\variants\variant_example.xml");
+            _variantFile = FileHandler.Open0adXmlFile<Variant>(@"E:\ActorEditor\ActorEditor.Model.NUnit.Tests\test_mod\art\variants\variant_example.xml");
         }
 
-        [TestMethod]
+        [Test]
         public void XMLVariantParseFrequency()
         {
             Assert.AreEqual(_variantFile.Frequency, (uint)1);
         }
 
-        [DataTestMethod]
-        [DataRow(null, null)]
-        [DataRow((uint)3, (uint)3)]
-        public void XMLVariantParseFrequency2(uint a, uint b)
+        [Test, Sequential]
+        public void XMLVariantParseFrequencySequential([Values(null,(uint) 2, (uint)3)] uint a, [Values(null, (uint)2, (uint)3)] uint b)
         {
             _variantFile.Frequency = a;
             Assert.AreEqual(_variantFile.Frequency, b);
         }
 
-        [TestMethod]
+        [Test]
         public void XMLVariantParseMesh()
         {
             Assert.AreEqual(_variantFile.Mesh, "structural/celt_blacksmith_struct1.dae");
         }
 
-        [TestMethod]
-        public void XMLParseName()
+        [Test]
+        public void XMLVariantParseName()
         {
             Assert.AreEqual(_variantFile.Name, "Blacksmith test");
         }
 
-        [TestMethod]
+        [Test]
         public void XMLVariantParseParticle()
         {
             Assert.AreEqual(_variantFile.Particle, null);
         }
 
-        [TestMethod]
+        [Test]
         public void XMLVariantParseParentRelativePath()
         {
             Assert.AreEqual(_variantFile.ParentVariantRelativePath, null);
